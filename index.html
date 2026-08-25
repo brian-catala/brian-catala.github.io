@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tu Nombre | Ciberseguridad</title>
+    <title>Brian Catalá | Ciberseguridad</title>
     <style>
         :root {
             --bg-color: #0d1117;
@@ -19,17 +19,61 @@
             background-color: var(--bg-color);
             color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             line-height: 1.6;
         }
 
+        /* Navbar estilo Marcos Carmona */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .navbar .site-name {
+            font-size: 1.1rem;
+            color: var(--accent-color);
+        }
+
+        .navbar .links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar .links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .navbar .links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* Contenido Principal */
         .container {
             max-width: 800px;
             margin: 0 auto;
+            padding: 40px 20px;
         }
 
         header {
-            border-bottom: 1px solid var(--border-color);
             padding-bottom: 20px;
             margin-bottom: 30px;
         }
@@ -95,50 +139,66 @@
     </style>
 </head>
 <body>
-    <div class="container">
+
+    <!-- Barra de navegación superior -->
+    <nav class="navbar">
+        <a class="logo" href="#inicio" aria-label="Ir al inicio">
+            <span class="site-name">brian-catala.dev</span>
+        </a>
+        <div class="links" id="main-nav-links">
+            <a href="#inicio">Inicio</a>
+            <a href="#sobre-mi">Sobre mí</a>
+            <a href="#habilidades">Habilidades</a>
+            <a href="#proyectos">Proyectos</a>
+            <a href="#contacto">Contacto</a>
+        </div>
+    </nav>
+
+    <div class="container" id="inicio">
         <header>
             <span class="terminal-prompt">> whoami</span>
-            <h1>Tu Nombre</h1>
+            <h1>Brian Catalá</h1>
             <p><strong>Rol:</strong> Entusiasta de la Ciberseguridad (Junior)</p>
-            <p><strong>Enfoque:</strong> Pentesting Web · Análisis de Vulnerabilidades · Redes</p>
+            <p><strong>Especialidad:</strong> Pentesting · Redes · Análisis de Vulnerabilidades</p>
         </header>
 
-        <section>
+        <section id="sobre-mi">
             <h2>> sobre_mí</h2>
-            <p>¡Hola! Soy informático en transición hacia la ciberseguridad. Actualmente me encuentro en formación activa mediante laboratorios prácticos, retos de CTFs y simulaciones en entornos controlados, con el objetivo de consolidar bases sólidas en seguridad ofensiva y defensiva.</p>
+            <p>¡Hola! Soy informático especializado en ciberseguridad. Actualmente me encuentro en formación activa mediante laboratorios prácticos, retos de CTFs y simulaciones en entornos controlados, construyendo sistemas seguros y desarrollando habilidades técnicas.</p>
         </section>
 
-        <section>
+        <section id="habilidades">
             <h2>> habilidades</h2>
             <ul class="skills-grid">
                 <li>Linux & Bash</li>
                 <li>Redes (TCP/IP, DNS)</li>
-                <li>Pentesting Web (OWASP Top 10)</li>
+                <li>Pentesting Web (OWASP)</li>
                 <li>Python para Scripting</li>
                 <li>Docker & Home Labs</li>
             </ul>
         </section>
 
-        <section>
-            <h2>> laboratorios_y_ctfs</h2>
+        <section id="proyectos">
+            <h2>> laboratorios_y_proyectos</h2>
             <ul>
-                <li><strong>Hack The Box:</strong> Resolución de máquinas enfocadas en enumeración y escalada de privilegios básica.</li>
+                <li><strong>Hack The Box:</strong> Resolución de máquinas enfocadas en enumeración y escalada de privilegios.</li>
                 <li><strong>OWASP Juice Shop:</strong> Prácticas en vulnerabilidades web (XSS, SQLi, IDOR).</li>
             </ul>
         </section>
 
-        <section>
+        <section id="contacto">
             <h2>> contacto</h2>
-            <p>¿Quieres ponerte en contacto o ver mi código?</p>
+            <p>¿Quieres ponerte en contacto?</p>
             <ul>
-                <li>GitHub: <a href="https://github.com/tu-usuario" target="_blank">github.com/tu-usuario</a></li>
+                <li>GitHub: <a href="https://github.com/brian-catala" target="_blank">github.com/brian-catala</a></li>
                 <li>Email: <a href="mailto:tu-correo@example.com">tu-correo@example.com</a></li>
             </ul>
         </section>
 
         <footer>
-            <p>© 2026 - Construido con terminal y café ☕</p>
+            <p>© 2026 Brian Catalá - Construido con terminal y código abierto ☕</p>
         </footer>
     </div>
+
 </body>
 </html>
