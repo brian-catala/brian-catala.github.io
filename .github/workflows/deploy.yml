@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: "pages"
-  cancel-in-running: true
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -54,6 +54,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy to GitHub Actions
         id: deployment
         uses: actions/deploy-pages@v4
