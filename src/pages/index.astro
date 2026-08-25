@@ -1,3 +1,7 @@
+---
+// Código de JavaScript del lado del servidor (si lo necesitas más adelante)
+---
+
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -62,6 +66,12 @@
         text-decoration: none;
       }
 
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
       nav ul {
         list-style: none;
         display: flex;
@@ -82,6 +92,24 @@
       nav ul li a:hover {
         color: #34d399;
         text-decoration: underline;
+      }
+
+      /* Botón de cambio de idioma */
+      #lang-toggle {
+        background-color: #1e293b;
+        color: #10b981;
+        border: 1px solid #10b981;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.85rem;
+        transition: all 0.2s ease;
+      }
+
+      #lang-toggle:hover {
+        background-color: #10b981;
+        color: #0b0f19;
       }
 
       /* Contenido principal */
@@ -209,14 +237,17 @@
         </div>
         <a href="#" class="logo-text">brian-catala.github.io</a>
       </div>
-      <nav>
-        <ul>
-          <li><a href="#home">home</a></li>
-          <li><a href="#about">about me</a></li>
-          <li><a href="#progress">progress</a></li>
-          <li><a href="#contact">contact</a></li>
-        </ul>
-      </nav>
+      <div class="nav-right">
+        <nav>
+          <ul>
+            <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
+            <li><a href="#about" data-en="about me" data-es="sobre mí">about me</a></li>
+            <li><a href="#progress" data-en="progress" data-es="progreso">progress</a></li>
+            <li><a href="#contact" data-en="contact" data-es="contacto">contact</a></li>
+          </ul>
+        </nav>
+        <button id="lang-toggle">ES</button>
+      </div>
     </header>
 
     <!-- Contenido -->
@@ -227,73 +258,89 @@
           <h1 class="terminal-title">Brian Catalá</h1>
           
           <div class="terminal-prompt">&gt; role</div>
-          <p class="terminal-text">Cybersecurity Analyst & Future Pentester</p>
+          <p class="terminal-text" data-en="Cybersecurity Analyst & Future Pentester" data-es="Analista de Ciberseguridad y Futuro Pentester">Cybersecurity Analyst & Future Pentester</p>
           
           <div class="terminal-prompt">&gt; specialty</div>
-          <p class="terminal-text">Pentesting · Red Team · Ethical Hacking</p>
+          <p class="terminal-text" data-en="Pentesting · Red Team · Ethical Hacking" data-es="Pentesting · Red Team · Hacking Ético">Pentesting · Red Team · Ethical Hacking</p>
           
           <div class="terminal-prompt">&gt; status</div>
           <p class="terminal-text">
-            Analyzing attack vectors and networks...<span class="cursor"></span>
+            <span data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes...">Analyzing attack vectors and networks...</span><span class="cursor"></span>
           </p>
         </div>
       </section>
 
       <section id="about">
-        <h2>About me</h2>
-        <p>
+        <h2 data-en="About me" data-es="Sobre mí">About me</h2>
+        <p data-en="Cybersecurity enthusiast driven by a passion for mastering web pentesting, vulnerability analysis, and network security. Actively honing advanced offensive skills through hands-on labs, CTFs, and real-world simulation, while currently pursuing the eJPTv2 certification to build a world-class technical foundation."
+           data-es="Entusiasta de la ciberseguridad impulsado por la pasión de dominar el pentesting web, el análisis de vulnerabilidades y la seguridad de redes. Mejorando activamente habilidades ofensivas avanzadas mediante laboratorios prácticos, CTFs y simulaciones del mundo real, mientras curso actualmente la certificación eJPTv2 para construir una base técnica de primer nivel.">
           Cybersecurity enthusiast driven by a passion for mastering web pentesting, vulnerability analysis, and network security. 
           Actively honing advanced offensive skills through hands-on labs, CTFs, and real-world simulation, while currently pursuing the <strong>eJPTv2</strong> certification to build a world-class technical foundation.
         </p>
         <ul class="card-list" style="margin-top: 1rem;">
-          <li class="card"><strong>Core Focus:</strong> Red Team / Pentesting &amp; OWASP Top 10</li>
-          <li class="card"><strong>Active Training:</strong> Hack The Box &amp; Advanced Local Labs</li>
-          <li class="card"><strong>Mindset:</strong> Continuous technical growth and deep offensive mastery</li>
+          <li class="card"><strong data-en="Core Focus:" data-es="Enfoque Principal:">Core Focus:</strong> <span data-en="Red Team / Pentesting &amp; OWASP Top 10" data-es="Red Team / Pentesting y OWASP Top 10">Red Team / Pentesting &amp; OWASP Top 10</span></li>
+          <li class="card"><strong data-en="Active Training:" data-es="Entrenamiento Activo:">Active Training:</strong> <span data-en="Hack The Box &amp; Advanced Local Labs" data-es="Hack The Box y Laboratorios Locales Avanzados">Hack The Box &amp; Advanced Local Labs</span></li>
+          <li class="card"><strong data-en="Mindset:" data-es="Mentalidad:">Mindset:</strong> <span data-en="Continuous technical growth and deep offensive mastery" data-es="Crecimiento técnico continuo y profundo dominio ofensivo">Continuous technical growth and deep offensive mastery</span></li>
         </ul>
       </section>
 
-      <!-- Nueva sección de Progreso -->
+      <!-- Sección de Progreso -->
       <section id="progress">
-        <h2>Progress</h2>
+        <h2 data-en="Progress" data-es="Progreso">Progress</h2>
         <ul class="card-list">
           <li class="card">
-            <h3>Web Pentesting</h3>
-            <p>Active learning of OWASP Top 10 and basic exploitation.</p>
-            <span class="level">Level: in progress</span>
+            <h3 data-en="Web Pentesting" data-es="Pentesting Web">Web Pentesting</h3>
+            <p data-en="Active learning of OWASP Top 10 and basic exploitation." data-es="Aprendizaje activo de OWASP Top 10 y explotación básica.">Active learning of OWASP Top 10 and basic exploitation.</p>
+            <span class="level" data-en="Level: in progress" data-es="Nivel: en curso">Level: in progress</span>
           </li>
           <li class="card">
-            <h3>Networks</h3>
-            <p>Fundamentals of TCP/IP, DNS, HTTP, and traffic analysis.</p>
-            <span class="level">Level: intermediate</span>
+            <h3 data-en="Networks" data-es="Redes">Networks</h3>
+            <p data-en="Fundamentals of TCP/IP, DNS, HTTP, and traffic analysis." data-es="Fundamentos de TCP/IP, DNS, HTTP y análisis de tráfico.">Fundamentals of TCP/IP, DNS, HTTP, and traffic analysis.</p>
+            <span class="level" data-en="Level: intermediate" data-es="Nivel: intermedio">Level: intermediate</span>
           </li>
           <li class="card">
-            <h3>Linux</h3>
-            <p>Daily usage in pentesting environments and basic administration.</p>
-            <span class="level">Level: intermediate</span>
-          </li>
-          <!-- Tarjeta de Python ahora igual que el resto -->
-          <li class="card">
-            <h3>Python</h3>
-            <p>Task automation and security-applied scripting.</p>
-            <span class="level">Level: basic</span>
+            <h3 data-en="Linux" data-es="Linux">Linux</h3>
+            <p data-en="Daily usage in pentesting environments and basic administration." data-es="Uso diario en entornos de pentesting y administración básica.">Daily usage in pentesting environments and basic administration.</p>
+            <span class="level" data-en="Level: intermediate" data-es="Nivel: intermedio">Level: intermediate</span>
           </li>
           <li class="card">
-            <h3>Docker</h3>
-            <p>Containerization of practice environments and service deployment.</p>
-            <span class="level">Level: in progress</span>
+            <h3 data-en="Python" data-es="Python">Python</h3>
+            <p data-en="Task automation and security-applied scripting." data-es="Automatización de tareas y scripting aplicado a seguridad.">Task automation and security-applied scripting.</p>
+            <span class="level" data-en="Level: basic" data-es="Nivel: básico">Level: basic</span>
+          </li>
+          <li class="card">
+            <h3 data-en="Docker" data-es="Docker">Docker</h3>
+            <p data-en="Containerization of practice environments and service deployment." data-es="Contenedorización de entornos de práctica y despliegue de servicios.">Containerization of practice environments and service deployment.</p>
+            <span class="level" data-en="Level: in progress" data-es="Nivel: en curso">Level: in progress</span>
           </li>
         </ul>
       </section>
 
       <section id="contact">
-        <h2>Contact</h2>
-        <p>Want to connect or talk about cybersecurity?</p>
+        <h2 data-en="Contact" data-es="Contacto">Contact</h2>
+        <p data-en="Want to connect or talk about cybersecurity?" data-es="¿Quieres conectar o hablar sobre ciberseguridad?">Want to connect or talk about cybersecurity?</p>
         <ul class="card-list" style="margin-top: 1rem;">
           <li class="card">GitHub: <a href="https://github.com/brian-catala" target="_blank" style="color: #10b981; text-decoration: none;">github.com/brian-catala</a></li>
-          <li class="card">LinkedIn: <a href="https://www.linkedin.com/in/brian-catala/" target="_blank" style="color: #10b981; text-decoration: none;">Your LinkedIn Profile</a></li>
+          <li class="card">LinkedIn: <a href="https://www.linkedin.com/in/brian-catala/" target="_blank" style="color: #10b981; text-decoration: none;" data-en="Your LinkedIn Profile" data-es="Tu Perfil de LinkedIn">Your LinkedIn Profile</a></li>
         </ul>
       </section>
     </main>
 
+    <!-- Script para alternar los idiomas -->
+    <script>
+      const toggleBtn = document.getElementById('lang-toggle');
+      let currentLang = 'en'; // Inglés por defecto
+
+      toggleBtn.addEventListener('click', () => {
+        currentLang = currentLang === 'en' ? 'es' : 'en';
+        toggleBtn.textContent = currentLang === 'en' ? 'ES' : 'EN';
+        document.documentElement.lang = currentLang;
+
+        // Traducir todos los elementos que tengan los atributos data-en y data-es
+        document.querySelectorAll('[data-en]').forEach(el => {
+          el.innerHTML = el.getAttribute(`data-${currentLang}`);
+        });
+      });
+    </script>
   </body>
 </html>
