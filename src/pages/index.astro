@@ -84,7 +84,6 @@
         transition: color 0.2s ease;
       }
 
-      /* Efecto al pasar el cursor por encima */
       nav ul li a:hover {
         color: #34d399;
         text-decoration: underline;
@@ -106,6 +105,18 @@
       #lang-toggle:hover {
         background-color: #10b981;
         color: #0b0f19;
+      }
+
+      /* Botón de menú hamburguesa (oculto en escritorio) */
+      .menu-toggle {
+        display: none;
+        background: none;
+        border: 1px solid #10b981;
+        color: #10b981;
+        font-size: 1.2rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
       }
 
       /* Contenido principal */
@@ -132,7 +143,7 @@
         line-height: 1.6;
       }
 
-      /* Tarjetas de proyectos, progreso y contacto */
+      /* Tarjetas */
       .card-list {
         list-style: none;
         padding: 0;
@@ -171,7 +182,7 @@
         font-weight: 500;
       }
 
-      /* Estilo tipo terminal para la sección de inicio */
+      /* Estilo tipo terminal */
       .terminal-box {
         background-color: #0f172a;
         border: 1px solid #1e293b;
@@ -205,7 +216,6 @@
         font-size: 1.05rem;
       }
 
-      /* Efecto de cursor parpadeante tipo terminal */
       .cursor {
         display: inline-block;
         background-color: #10b981;
@@ -226,26 +236,39 @@
       /* ========================================== */
       @media (max-width: 768px) {
         header {
-          flex-direction: column;
-          gap: 1rem;
+          flex-wrap: wrap;
           padding: 1rem;
-          text-align: center;
         }
 
-        .logo-text {
-          font-size: 0.95rem;
+        .menu-toggle {
+          display: block; /* Muestra el botón de hamburguesa en móvil */
         }
 
         .nav-right {
-          flex-direction: column;
-          gap: 1rem;
           width: 100%;
+          justify-content: space-between;
+          margin-top: 0.5rem;
+        }
+
+        /* Menú oculto por defecto en móvil que se despliega al pulsar */
+        nav {
+          display: none;
+          width: 100%;
+          background-color: #0f172a;
+          border-top: 1px solid #1e293b;
+          padding-top: 0.5rem;
+          margin-top: 0.5rem;
+        }
+
+        nav.active {
+          display: block;
         }
 
         nav ul {
-          flex-wrap: wrap;
-          justify-content: center;
-          gap: 1rem;
+          flex-direction: column;
+          gap: 0.8rem;
+          text-align: center;
+          padding: 0.5rem 0;
         }
 
         main {
@@ -273,17 +296,23 @@
         </div>
         <a href="#" class="logo-text">brian-catala.github.io</a>
       </div>
+
       <div class="nav-right">
-        <nav>
-          <ul>
-            <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
-            <li><a href="#about" data-en="about me" data-es="sobre mí">about me</a></li>
-            <li><a href="#progress" data-en="progress" data-es="progreso">progress</a></li>
-            <li><a href="#contact" data-en="contact" data-es="contacto">contact</a></li>
-          </ul>
-        </nav>
+        <!-- Botón de hamburguesa para móviles -->
+        <button class="menu-toggle" id="menu-btn">&#9776;</button>
+        <!-- Botón de idioma -->
         <button id="lang-toggle">ES</button>
       </div>
+
+      <!-- Enlaces de navegación -->
+      <nav id="nav-menu">
+        <ul>
+          <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
+          <li><a href="#about" data-en="about me" data-es="sobre mí">about me</a></li>
+          <li><a href="#progress" data-en="progress" data-es="progreso">progress</a></li>
+          <li><a href="#contact" data-en="contact" data-es="contacto">contact</a></li>
+        </ul>
+      </nav>
     </header>
 
     <!-- Contenido -->
@@ -362,10 +391,26 @@
       </section>
     </main>
 
-    <!-- Script para alternar los idiomas -->
+    <!-- Scripts para el menú móvil y cambio de idiomas -->
     <script>
+      // Menú desplegable móvil
+      const menuBtn = document.getElementById('menu-btn');
+      const navMenu = document.getElementById('nav-menu');
+
+      menuBtn.addEventListener('click', () => {
+        navMenu.classList.toggle('active');
+      });
+
+      // Cerrar menú al hacer clic en una opción
+      document.querySelectorAll('nav ul li a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMenu.classList.remove('active');
+        });
+      });
+
+      // Cambio de idiomas
       const toggleBtn = document.getElementById('lang-toggle');
-      let currentLang = 'en'; // Inglés por defecto
+      let currentLang = 'en';
 
       toggleBtn.addEventListener('click', () => {
         currentLang = currentLang === 'en' ? 'es' : 'en';
