@@ -241,7 +241,7 @@
         }
 
         .menu-toggle {
-          display: block; /* Muestra el botón de hamburguesa en móvil */
+          display: block;
         }
 
         .nav-right {
@@ -250,7 +250,6 @@
           margin-top: 0.5rem;
         }
 
-        /* Menú oculto por defecto en móvil que se despliega al pulsar */
         nav {
           display: none;
           width: 100%;
@@ -298,13 +297,10 @@
       </div>
 
       <div class="nav-right">
-        <!-- Botón de hamburguesa para móviles -->
         <button class="menu-toggle" id="menu-btn">&#9776;</button>
-        <!-- Botón de idioma -->
         <button id="lang-toggle">ES</button>
       </div>
 
-      <!-- Enlaces de navegación -->
       <nav id="nav-menu">
         <ul>
           <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
@@ -320,17 +316,17 @@
       <section id="home">
         <div class="terminal-box">
           <div class="terminal-prompt">&gt; whoami</div>
-          <h1 class="terminal-title">Brian Catalá</h1>
+          <h1 class="terminal-title" id="type-title"></h1>
           
           <div class="terminal-prompt">&gt; role</div>
-          <p class="terminal-text" data-en="Cybersecurity Analyst & Future Pentester" data-es="Analista de Ciberseguridad y Futuro Pentester">Cybersecurity Analyst & Future Pentester</p>
+          <p class="terminal-text" id="type-role" data-en="Cybersecurity Analyst & Future Pentester" data-es="Analista de Ciberseguridad y Futuro Pentester"></p>
           
           <div class="terminal-prompt">&gt; specialty</div>
-          <p class="terminal-text" data-en="Pentesting · Red Team · Ethical Hacking" data-es="Pentesting · Red Team · Hacking Ético">Pentesting · Red Team · Ethical Hacking</p>
+          <p class="terminal-text" id="type-specialty" data-en="Pentesting · Red Team · Ethical Hacking" data-es="Pentesting · Red Team · Hacking Ético"></p>
           
           <div class="terminal-prompt">&gt; status</div>
           <p class="terminal-text">
-            <span data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes...">Analyzing attack vectors and networks...</span><span class="cursor"></span>
+            <span id="type-status" data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes..."></span><span class="cursor"></span>
           </p>
         </div>
       </section>
@@ -391,7 +387,7 @@
       </section>
     </main>
 
-    <!-- Scripts para el menú móvil y cambio de idiomas -->
+    <!-- Scripts para el menú móvil, efecto de escritura y cambio de idiomas -->
     <script>
       // Menú desplegable móvil
       const menuBtn = document.getElementById('menu-btn');
@@ -401,25 +397,74 @@
         navMenu.classList.toggle('active');
       });
 
-      // Cerrar menú al hacer clic en una opción
       document.querySelectorAll('nav ul li a').forEach(link => {
         link.addEventListener('click', () => {
           navMenu.classList.remove('active');
         });
       });
 
+      // Función para efecto de escritura máquina de escribir
+      function typeWriter(element, text, speed = 50, callback) {
+        let i = 0;
+        element.innerHTML = "";
+        function typing() {
+          if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+          } else if (callback) {
+            callback();
+          }
+        }
+        typing();
+      }
+
+      let currentLang = 'en';
+
+      function runTerminalAnimation() {
+        const titleEl = document.getElementById('type-title');
+        const roleEl = document.getElementById('type-role');
+        const specialtyEl = document.getElementById('type-specialty');
+        const statusEl = document.getElementById('type-status');
+
+        const titleText = "Brian Catalá";
+        const roleText = roleEl.getAttribute(`data-${currentLang}`);
+        const specialtyText = specialtyEl.getAttribute(`data-${currentLang}`);
+        const statusText = statusEl.getAttribute(`data-${currentLang}`);
+
+        // Secuencia encadenada
+        typeWriter(titleEl, titleText, 70, () => {
+          typeWriter(roleEl, roleText, 40, () => {
+            typeWriter(specialtyEl, specialtyText, 40, () => {
+              typeWriter(statusEl, statusText, 30);
+            });
+          });
+        });
+      }
+
+      // Ejecutar al cargar la página
+      window.addEventListener('DOMContentLoaded', () => {
+        runTerminalAnimation();
+      });
+
       // Cambio de idiomas
       const toggleBtn = document.getElementById('lang-toggle');
-      let currentLang = 'en';
 
       toggleBtn.addEventListener('click', () => {
         currentLang = currentLang === 'en' ? 'es' : 'en';
         toggleBtn.textContent = currentLang === 'en' ? 'ES' : 'EN';
         document.documentElement.lang = currentLang;
 
+        // Traducir elementos normales
         document.querySelectorAll('[data-en]').forEach(el => {
-          el.innerHTML = el.getAttribute(`data-${currentLang}`);
+          // Excluimos los de la terminal para que la animación los maneje o se actualicen bien
+          if(!el.id.startsWith('type-')) {
+            el.innerHTML = el.getAttribute(`data-${currentLang}`);
+          }
         });
+
+        // Volver a correr la animación de la terminal en el nuevo idioma
+        runTerminalAnimation();
       });
     </script>
   </body>
