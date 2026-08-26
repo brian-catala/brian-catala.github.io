@@ -189,7 +189,7 @@
         border-radius: 8px;
         padding: 2.5rem;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-        min-height: 320px; /* Evita que el contenedor salte al estar vacío al principio */
+        min-height: 320px;
       }
 
       .terminal-prompt {
@@ -198,7 +198,7 @@
         margin-top: 1.2rem;
         margin-bottom: 0.2rem;
         font-family: 'Courier New', Courier, monospace;
-        min-height: 1.2rem; /* Mantiene el espacio aunque esté vacío */
+        min-height: 1.2rem;
       }
 
       .terminal-prompt:first-child {
@@ -210,16 +210,17 @@
         color: #f8fafc;
         margin: 0 0 1rem 0;
         font-weight: 700;
-        min-height: 3rem; /* Mantiene el espacio */
+        min-height: 3rem;
       }
 
       .terminal-text {
         color: #94a3b8;
         margin: 0;
         font-size: 1.05rem;
-        min-height: 1.5rem; /* Mantiene el espacio */
+        min-height: 1.5rem;
       }
 
+      /* Efecto de cursor parpadeante tipo terminal */
       .cursor {
         display: inline-block;
         background-color: #10b981;
@@ -321,7 +322,7 @@
     <main>
       <section id="home">
         <div class="terminal-box">
-          <!-- Añado IDs a todos los elementos para que el script los escriba en orden -->
+          <!-- Elementos de la terminal (sin cursor estático fijo inicial) -->
           <div class="terminal-prompt" id="prompt-whoami"></div>
           <h1 class="terminal-title" id="type-title"></h1>
           
@@ -333,7 +334,7 @@
           
           <div class="terminal-prompt" id="prompt-status"></div>
           <p class="terminal-text">
-            <span id="type-status" data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes..."></span><span class="cursor"></span>
+            <span id="type-status" data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes..."></span>
           </p>
         </div>
       </section>
@@ -410,17 +411,29 @@
         });
       });
 
-      // Función para efecto de escritura máquina de escribir
-      function typeWriter(element, text, speed = 40, callback) {
+      // Función de escritura máquina de escribir que mueve el cursor dinámicamente
+      function typeWriter(element, text, speed = 35, callback) {
         let i = 0;
         element.innerHTML = "";
+        
+        // Creamos el elemento cursor parpadeante
+        const cursor = document.createElement('span');
+        cursor.className = 'cursor';
+        element.appendChild(cursor);
+
         function typing() {
           if (i < text.length) {
-            element.innerHTML += text.charAt(i);
+            // Insertamos el texto justo antes del cursor para que lo acompañe
+            element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
             i++;
             setTimeout(typing, speed);
-          } else if (callback) {
-            callback();
+          } else {
+            if (callback) {
+              // Si hay una siguiente línea, removemos el cursor de esta línea actual
+              cursor.remove();
+              callback();
+            }
+            // Si es la última línea, el cursor se queda parpadeando al final del todo de forma permanente
           }
         }
         typing();
@@ -429,20 +442,16 @@
       let currentLang = 'en';
 
       function runTerminalAnimation() {
-        // Obtenemos los elementos
         const pWhoami = document.getElementById('prompt-whoami');
         const titleEl = document.getElementById('type-title');
-        
         const pRole = document.getElementById('prompt-role');
         const roleEl = document.getElementById('type-role');
-        
         const pSpecialty = document.getElementById('prompt-specialty');
         const specialtyEl = document.getElementById('type-specialty');
-        
         const pStatus = document.getElementById('prompt-status');
         const statusEl = document.getElementById('type-status');
 
-        // Limpiamos TODO antes de empezar la animación
+        // Limpiar todo al inicio
         pWhoami.innerHTML = "";
         titleEl.innerHTML = "";
         pRole.innerHTML = "";
@@ -456,16 +465,15 @@
         const specialtyText = specialtyEl.getAttribute(`data-${currentLang}`);
         const statusText = statusEl.getAttribute(`data-${currentLang}`);
 
-        // Secuencia encadenada de principio a fin (comandos y respuestas)
-        // Usamos una velocidad un poco más rápida (30ms) para que no tarde tanto
+        // Secuencia encadenada moviendo el cursor paso a paso
         typeWriter(pWhoami, "> whoami", 30, () => {
-          typeWriter(titleEl, "Brian Catalá", 40, () => {
+          typeWriter(titleEl, "Brian Catalá", 35, () => {
             typeWriter(pRole, "> role", 30, () => {
-              typeWriter(roleEl, roleText, 30, () => {
+              typeWriter(roleEl, roleText, 25, () => {
                 typeWriter(pSpecialty, "> specialty", 30, () => {
-                  typeWriter(specialtyEl, specialtyText, 30, () => {
+                  typeWriter(specialtyEl, specialtyText, 25, () => {
                     typeWriter(pStatus, "> status", 30, () => {
-                      typeWriter(statusEl, statusText, 30);
+                      typeWriter(statusEl, statusText, 25); // Este dejará el cursor parpadeando al final del todo
                     });
                   });
                 });
@@ -477,7 +485,7 @@
 
       // Ejecutar al cargar la página
       window.addEventListener('DOMContentLoaded', () => {
-        runTerminalAnimation();
+        runTrailAnimationIfNeeded = setTimeout(runTerminalAnimation, 100);
       });
 
       // Cambio de idiomas
@@ -488,14 +496,14 @@
         toggleBtn.textContent = currentLang === 'en' ? 'ES' : 'EN';
         document.documentElement.lang = currentLang;
 
-        // Traducir elementos normales (excluyendo los que dibuja la terminal animada)
+        // Traducir elementos normales de la página
         document.querySelectorAll('[data-en]').forEach(el => {
           if(!el.id.startsWith('type-') && !el.id.startsWith('prompt-')) {
             el.innerHTML = el.getAttribute(`data-${currentLang}`);
           }
         });
 
-        // Volver a correr la animación de la terminal en el nuevo idioma
+        // Reiniciar animación con el nuevo idioma
         runTerminalAnimation();
       });
     </script>
