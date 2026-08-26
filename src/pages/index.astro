@@ -189,6 +189,7 @@
         border-radius: 8px;
         padding: 2.5rem;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        min-height: 320px; /* Evita que el contenedor salte al estar vacío al principio */
       }
 
       .terminal-prompt {
@@ -197,6 +198,7 @@
         margin-top: 1.2rem;
         margin-bottom: 0.2rem;
         font-family: 'Courier New', Courier, monospace;
+        min-height: 1.2rem; /* Mantiene el espacio aunque esté vacío */
       }
 
       .terminal-prompt:first-child {
@@ -208,12 +210,14 @@
         color: #f8fafc;
         margin: 0 0 1rem 0;
         font-weight: 700;
+        min-height: 3rem; /* Mantiene el espacio */
       }
 
       .terminal-text {
         color: #94a3b8;
         margin: 0;
         font-size: 1.05rem;
+        min-height: 1.5rem; /* Mantiene el espacio */
       }
 
       .cursor {
@@ -277,10 +281,12 @@
 
         .terminal-box {
           padding: 1.5rem;
+          min-height: 340px;
         }
 
         .terminal-title {
           font-size: 1.8rem;
+          min-height: 2.2rem;
         }
       }
     </style>
@@ -315,16 +321,17 @@
     <main>
       <section id="home">
         <div class="terminal-box">
-          <div class="terminal-prompt">&gt; whoami</div>
+          <!-- Añado IDs a todos los elementos para que el script los escriba en orden -->
+          <div class="terminal-prompt" id="prompt-whoami"></div>
           <h1 class="terminal-title" id="type-title"></h1>
           
-          <div class="terminal-prompt">&gt; role</div>
+          <div class="terminal-prompt" id="prompt-role"></div>
           <p class="terminal-text" id="type-role" data-en="Cybersecurity Analyst & Future Pentester" data-es="Analista de Ciberseguridad y Futuro Pentester"></p>
           
-          <div class="terminal-prompt">&gt; specialty</div>
+          <div class="terminal-prompt" id="prompt-specialty"></div>
           <p class="terminal-text" id="type-specialty" data-en="Pentesting · Red Team · Ethical Hacking" data-es="Pentesting · Red Team · Hacking Ético"></p>
           
-          <div class="terminal-prompt">&gt; status</div>
+          <div class="terminal-prompt" id="prompt-status"></div>
           <p class="terminal-text">
             <span id="type-status" data-en="Analyzing attack vectors and networks..." data-es="Analizando vectores de ataque y redes..."></span><span class="cursor"></span>
           </p>
@@ -387,7 +394,7 @@
       </section>
     </main>
 
-    <!-- Scripts para el menú móvil, efecto de escritura y cambio de idiomas -->
+    <!-- Scripts -->
     <script>
       // Menú desplegable móvil
       const menuBtn = document.getElementById('menu-btn');
@@ -404,7 +411,7 @@
       });
 
       // Función para efecto de escritura máquina de escribir
-      function typeWriter(element, text, speed = 50, callback) {
+      function typeWriter(element, text, speed = 40, callback) {
         let i = 0;
         element.innerHTML = "";
         function typing() {
@@ -422,21 +429,47 @@
       let currentLang = 'en';
 
       function runTerminalAnimation() {
+        // Obtenemos los elementos
+        const pWhoami = document.getElementById('prompt-whoami');
         const titleEl = document.getElementById('type-title');
+        
+        const pRole = document.getElementById('prompt-role');
         const roleEl = document.getElementById('type-role');
+        
+        const pSpecialty = document.getElementById('prompt-specialty');
         const specialtyEl = document.getElementById('type-specialty');
+        
+        const pStatus = document.getElementById('prompt-status');
         const statusEl = document.getElementById('type-status');
 
-        const titleText = "Brian Catalá";
+        // Limpiamos TODO antes de empezar la animación
+        pWhoami.innerHTML = "";
+        titleEl.innerHTML = "";
+        pRole.innerHTML = "";
+        roleEl.innerHTML = "";
+        pSpecialty.innerHTML = "";
+        specialtyEl.innerHTML = "";
+        pStatus.innerHTML = "";
+        statusEl.innerHTML = "";
+
         const roleText = roleEl.getAttribute(`data-${currentLang}`);
         const specialtyText = specialtyEl.getAttribute(`data-${currentLang}`);
         const statusText = statusEl.getAttribute(`data-${currentLang}`);
 
-        // Secuencia encadenada
-        typeWriter(titleEl, titleText, 70, () => {
-          typeWriter(roleEl, roleText, 40, () => {
-            typeWriter(specialtyEl, specialtyText, 40, () => {
-              typeWriter(statusEl, statusText, 30);
+        // Secuencia encadenada de principio a fin (comandos y respuestas)
+        // Usamos una velocidad un poco más rápida (30ms) para que no tarde tanto
+        typeWriter(pWhoami, "> whoami", 30, () => {
+          typeWriter(titleEl, "Brian Catalá", 40, () => {
+            typeWriter(pRole, "> role", 30, () => {
+              typeWriter(roleEl, roleText, 30, () => {
+                typeWriter(pSpecialty, "> specialty", 30, () => {
+                  typeWriter(specialtyEl, specialtyText, 30, () => {
+                    typeWriter(pStatus, "> status", 30, () => {
+                      typeWriter(statusEl, statusText, 30);
+                    });
+                  });
+                });
+              });
             });
           });
         });
@@ -455,10 +488,9 @@
         toggleBtn.textContent = currentLang === 'en' ? 'ES' : 'EN';
         document.documentElement.lang = currentLang;
 
-        // Traducir elementos normales
+        // Traducir elementos normales (excluyendo los que dibuja la terminal animada)
         document.querySelectorAll('[data-en]').forEach(el => {
-          // Excluimos los de la terminal para que la animación los maneje o se actualicen bien
-          if(!el.id.startsWith('type-')) {
+          if(!el.id.startsWith('type-') && !el.id.startsWith('prompt-')) {
             el.innerHTML = el.getAttribute(`data-${currentLang}`);
           }
         });
