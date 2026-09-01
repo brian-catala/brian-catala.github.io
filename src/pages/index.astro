@@ -6,7 +6,7 @@
     <link rel="icon" type="image/png" href="/avatar.png" />
     
     <style>
-      /* Estilos generales oscuros (estilo terminal/hacker) con negro puro */
+      /* Estilos generales oscuros con fondo negro puro y acentos amarillos */
       body {
         margin: 0;
         padding: 0;
@@ -21,8 +21,8 @@
         justify-content: space-between;
         align-items: center;
         padding: 1rem 2rem;
-        background-color: #0f172a;
-        border-bottom: 1px solid #1e293b;
+        background-color: #09090b;
+        border-bottom: 1px solid #27272a;
         position: sticky;
         top: 0;
         z-index: 100;
@@ -34,14 +34,14 @@
         gap: 12px;
       }
 
-      /* Estilo del avatar con brillo naranja fosfi ajustado */
+      /* Estilo del avatar con brillo amarillo */
       .avatar {
         width: 42px;
         height: 42px;
         border-radius: 50%;
-        background: #1e293b;
-        border: 2px solid #ff5500;
-        box-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+        background: #18181b;
+        border: 2px solid #facc15;
+        box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -56,7 +56,7 @@
       }
 
       .logo-text {
-        color: #ff5500;
+        color: #facc15;
         font-weight: 700;
         font-size: 1.1rem;
         text-decoration: none;
@@ -78,22 +78,22 @@
 
       /* Estilo de los enlaces del menú */
       nav ul li a {
-        color: #ff5500;
+        color: #facc15;
         text-decoration: none;
         font-size: 0.95rem;
         transition: color 0.2s ease;
       }
 
       nav ul li a:hover {
-        color: #ff7733;
+        color: #fde047;
         text-decoration: underline;
       }
 
       /* Botón de cambio de idioma */
       #lang-toggle {
-        background-color: #1e293b;
-        color: #ff5500;
-        border: 1px solid #ff5500;
+        background-color: #18181b;
+        color: #facc15;
+        border: 1px solid #facc15;
         padding: 0.4rem 0.8rem;
         border-radius: 6px;
         cursor: pointer;
@@ -103,7 +103,7 @@
       }
 
       #lang-toggle:hover {
-        background-color: #ff5500;
+        background-color: #facc15;
         color: #000000;
       }
 
@@ -111,8 +111,8 @@
       .menu-toggle {
         display: none;
         background: none;
-        border: 1px solid #ff5500;
-        color: #ff5500;
+        border: 1px solid #facc15;
+        color: #facc15;
         font-size: 1.2rem;
         padding: 0.3rem 0.6rem;
         border-radius: 6px;
@@ -132,14 +132,14 @@
 
       h2 {
         font-size: 1.5rem;
-        color: #ff5500;
-        border-bottom: 1px solid #1e293b;
+        color: #facc15;
+        border-bottom: 1px solid #27272a;
         padding-bottom: 0.5rem;
         margin-top: 2rem;
       }
 
       p {
-        color: #94a3b8;
+        color: #a1a1aa;
         line-height: 1.6;
       }
 
@@ -152,15 +152,15 @@
       }
 
       .card {
-        background-color: #0f172a;
-        border: 1px solid #1e293b;
+        background-color: #09090b;
+        border: 1px solid #27272a;
         padding: 1.2rem;
         border-radius: 8px;
         transition: border-color 0.2s;
       }
 
       .card:hover {
-        border-color: #ff5500;
+        border-color: #facc15;
       }
 
       .card h3 {
@@ -178,22 +178,22 @@
         display: block;
         margin-top: 0.5rem;
         font-size: 0.85rem;
-        color: #ff5500;
+        color: #facc15;
         font-weight: 500;
       }
 
       /* Estilo tipo terminal */
       .terminal-box {
-        background-color: #0f172a;
-        border: 1px solid #1e293b;
+        background-color: #09090b;
+        border: 1px solid #27272a;
         border-radius: 8px;
         padding: 2.5rem;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
         min-height: 320px;
       }
 
       .terminal-prompt {
-        color: #ff5500;
+        color: #facc15;
         font-weight: bold;
         margin-top: 1.2rem;
         margin-bottom: 0.2rem;
@@ -214,16 +214,16 @@
       }
 
       .terminal-text {
-        color: #94a3b8;
+        color: #a1a1aa;
         margin: 0;
         font-size: 1.05rem;
         min-height: 1.5rem;
       }
 
-      /* Efecto de cursor parpadeante tipo terminal */
+      /* Efecto de cursor parpadeante tipo terminal en amarillo */
       .cursor {
         display: inline-block;
-        background-color: #ff5500;
+        background-color: #facc15;
         width: 8px;
         height: 18px;
         margin-left: 4px;
@@ -258,8 +258,8 @@
         nav {
           display: none;
           width: 100%;
-          background-color: #0f172a;
-          border-top: 1px solid #1e293b;
+          background-color: #09090b;
+          border-top: 1px solid #27272a;
           padding-top: 0.5rem;
           margin-top: 0.5rem;
         }
@@ -322,7 +322,7 @@
     <main>
       <section id="home">
         <div class="terminal-box">
-          <!-- Elementos de la terminal (sin cursor estático fijo inicial) -->
+          <!-- Elementos de la terminal -->
           <div class="terminal-prompt" id="prompt-whoami"></div>
           <h1 class="terminal-title" id="type-title"></h1>
           
@@ -389,8 +389,8 @@
         <h2 data-en="Contact" data-es="Contacto">Contact</h2>
         <p data-en="Want to connect or talk about cybersecurity?" data-es="¿Quieres conectar o hablar sobre ciberseguridad?">Want to connect or talk about cybersecurity?</p>
         <ul class="card-list" style="margin-top: 1rem;">
-          <li class="card">GitHub: <a href="https://github.com/brian-catala" target="_blank" style="color: #ff5500; text-decoration: none;">github.com/brian-catala</a></li>
-          <li class="card">LinkedIn: <a href="https://www.linkedin.com/in/brian-catala/" target="_blank" style="color: #ff5500; text-decoration: none;" data-en="Your LinkedIn Profile" data-es="Tu Perfil de LinkedIn">Your LinkedIn Profile</a></li>
+          <li class="card">GitHub: <a href="https://github.com/brian-catala" target="_blank" style="color: #facc15; text-decoration: none;">github.com/brian-catala</a></li>
+          <li class="card">LinkedIn: <a href="https://www.linkedin.com/in/brian-catala/" target="_blank" style="color: #facc15; text-decoration: none;" data-en="Your LinkedIn Profile" data-es="Tu Perfil de LinkedIn">Your LinkedIn Profile</a></li>
         </ul>
       </section>
     </main>
@@ -411,29 +411,25 @@
         });
       });
 
-      // Función de escritura máquina de escribir que mueve el cursor dinámicamente
+      // Función de escritura máquina de escribir
       function typeWriter(element, text, speed = 35, callback) {
         let i = 0;
         element.innerHTML = "";
         
-        // Creamos el elemento cursor parpadeante
         const cursor = document.createElement('span');
         cursor.className = 'cursor';
         element.appendChild(cursor);
 
         function typing() {
           if (i < text.length) {
-            // Insertamos el texto justo antes del cursor para que lo acompañe
             element.insertBefore(document.createTextNode(text.charAt(i)), cursor);
             i++;
             setTimeout(typing, speed);
           } else {
             if (callback) {
-              // Si hay una siguiente línea, removemos el cursor de esta línea actual
               cursor.remove();
               callback();
             }
-            // Si es la última línea, el cursor se queda parpadeando al final del todo de forma permanente
           }
         }
         typing();
@@ -451,7 +447,6 @@
         const pStatus = document.getElementById('prompt-status');
         const statusEl = document.getElementById('type-status');
 
-        // Limpiar todo al inicio
         pWhoami.innerHTML = "";
         titleEl.innerHTML = "";
         pRole.innerHTML = "";
@@ -465,7 +460,6 @@
         const specialtyText = specialtyEl.getAttribute(`data-${currentLang}`);
         const statusText = statusEl.getAttribute(`data-${currentLang}`);
 
-        // Secuencia encadenada moviendo el cursor paso a paso
         typeWriter(pWhoami, "> whoami", 30, () => {
           typeWriter(titleEl, "Brian Catalá", 35, () => {
             typeWriter(pRole, "> role", 30, () => {
@@ -473,7 +467,7 @@
                 typeWriter(pSpecialty, "> specialty", 30, () => {
                   typeWriter(specialtyEl, specialtyText, 25, () => {
                     typeWriter(pStatus, "> status", 30, () => {
-                      typeWriter(statusEl, statusText, 25); // Este dejará el cursor parpadeando al final del todo
+                      typeWriter(statusEl, statusText, 25);
                     });
                   });
                 });
@@ -483,9 +477,8 @@
         });
       }
 
-      // Ejecutar al cargar la página
       window.addEventListener('DOMContentLoaded', () => {
-        runTrailAnimationIfNeeded = setTimeout(runTerminalAnimation, 100);
+        setTimeout(runTerminalAnimation, 100);
       });
 
       // Cambio de idiomas
@@ -496,14 +489,12 @@
         toggleBtn.textContent = currentLang === 'en' ? 'ES' : 'EN';
         document.documentElement.lang = currentLang;
 
-        // Traducir elementos normales de la página
         document.querySelectorAll('[data-en]').forEach(el => {
           if(!el.id.startsWith('type-') && !el.id.startsWith('prompt-')) {
             el.innerHTML = el.getAttribute(`data-${currentLang}`);
           }
         });
 
-        // Reiniciar animación con el nuevo idioma
         runTerminalAnimation();
       });
     </script>
