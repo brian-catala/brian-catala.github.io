@@ -1,4 +1,4 @@
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -6,7 +6,6 @@
     <link rel="icon" type="image/png" href="/avatar.png" />
     
     <style>
-      /* Usamos los mismos estilos base de tu index.html */
       body {
         margin: 0; padding: 0;
         background-color: #000000; color: #e2e8f0;
@@ -27,13 +26,20 @@
       .avatar img { width: 42px; height: 42px; object-fit: cover; }
       .logo-text { color: #facc15; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
       
+      /* Estilo para el botón de idioma en la cabecera */
+      .lang-btn {
+        background: transparent; border: 1px solid #facc15; color: #facc15;
+        padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+        font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
+      }
+      .lang-btn:hover { background-color: #facc15; color: #000000; }
+
       main { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
       h1, h2, h3 { color: #facc15; }
       h1 { font-size: 2rem; border-bottom: 1px solid #27272a; padding-bottom: 0.5rem; }
       h2 { font-size: 1.4rem; margin-top: 2.5rem; border-bottom: 1px solid #27272a; padding-bottom: 0.3rem; }
       p, li { color: #a1a1aa; line-height: 1.6; }
       
-      /* Estilo para los bloques de código */
       pre {
         background-color: #09090b; border: 1px solid #27272a;
         padding: 1rem; border-radius: 6px; overflow-x: auto;
@@ -58,56 +64,112 @@
         <div class="avatar">
           <img src="/avatar.png" alt="Brian Català Avatar" />
         </div>
-        <a href="../index.html" class="logo-text">brian-catala.github.io</a>
+        <a href="/" class="logo-text">brian-catala.github.io</a>
       </div>
+      <!-- Botón de selector de idioma idéntico al index -->
+      <button id="lang-toggle" class="lang-btn">EN / ES</button>
     </header>
 
     <main>
-      <a href="../index.html" class="back-btn">← Volver al inicio</a>
+      <a href="/" class="back-btn" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
       
-      <h1>Write-up: Cohort (HackTheBox)</h1>
-      <p><strong>Dificultad:</strong> Media | <strong>Plataforma:</strong> HackTheBox | <strong>OS:</strong> Linux</p>
-      <p><strong>Objetivos:</strong> Explotación de SSRF, Bypass de restricciones de red, Explotación de WebSockets (CVE-2026-39987) y Escalada de privilegios local mediante PackageKit (CVE-2026-41651 - Pack2TheRoot).</p>
+      <h1 data-en="Write-up: Cohort (HackTheBox)" data-es="Write-up: Cohort (HackTheBox)">Write-up: Cohort (HackTheBox)</h1>
+      <p>
+        <strong data-en="Difficulty:" data-es="Dificultad:">Dificultad:</strong> <span data-en="Easy" data-es="Facil">Facil</span> | 
+        <strong data-en="Platform:" data-es="Plataforma:">Plataforma:</strong> HackTheBox | 
+        <strong data-en="OS:" data-es="OS:">OS:</strong> Linux
+      </p>
+      <p>
+        <strong data-en="Objectives:" data-es="Objetivos:">Objetivos:</strong> 
+        <span data-en="SSRF exploitation, Network restriction bypass, WebSockets exploitation (CVE-2026-39987), and local privilege escalation via PackageKit (CVE-2026-41651 - Pack2TheRoot)."
+              data-es="Explotación de SSRF, Bypass de restricciones de red, Explotación de WebSockets (CVE-2026-39987) y Escalada de privilegios local mediante PackageKit (CVE-2026-41651 - Pack2TheRoot).">
+          Explotación de SSRF, Bypass de restricciones de red, Explotación de WebSockets (CVE-2026-39987) y Escalada de privilegios local mediante PackageKit (CVE-2026-41651 - Pack2TheRoot).
+        </span>
+      </p>
 
-      <h2>1. Reconocimiento y Enumeración Inicial</h2>
-      <p>Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos:</p>
+      <h2 data-en="1. Initial Reconnaissance and Enumeration" data-es="1. Reconocimiento y Enumeración Inicial">1. Reconocimiento y Enumeración Inicial</h2>
+      <p data-en="We begin by performing a port scan using nmap to identify exposed services on the target machine:" 
+         data-es="Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos:">
+        Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos:
+      </p>
       <pre><code>nmap -v -p- --open -T4 -sS -n -oX escaneo.xml 10.129.119.9</code></pre>
-      <p>El escaneo revela los puertos:</p>
+      <p data-en="The scan reveals the following open ports:" data-es="El escaneo revela los siguientes puertos abiertos:">El escaneo revela los puertos:</p>
       <ul>
         <li><strong>22/tcp</strong> - SSH</li>
         <li><strong>80/tcp</strong> - HTTP</li>
         <li><strong>443/tcp</strong> - HTTPS</li>
       </ul>
-      <p>Añadimos la resolución estática al archivo <code>/etc/hosts</code>:</p>
+      <p data-en="We add the static resolution to the <code>/etc/hosts</code> file:" data-es="Añadimos la resolución estática al archivo <code>/etc/hosts</code>:">Añadimos la resolución estática al archivo <code>/etc/hosts</code>:</p>
       <pre><code>echo "10.129.119.9 cohort.htb" | sudo tee -a /etc/hosts</code></pre>
 
-      <h2>2. Enumeración Web y Hallazgo de SSRF</h2>
-      <p>Al interactuar con la aplicación web, interceptamos una solicitud POST al endpoint <code>/api/validate</code>:</p>
+      <h2 data-en="2. Web Enumeration and SSRF Discovery" data-es="2. Enumeración Web y Hallazgo de SSRF">2. Enumeración Web y Hallazgo de SSRF</h2>
+      <p data-en="While interacting with the web application, we intercept a POST request to the <code>/api/validate</code> endpoint:" 
+         data-es="Al interactuar con la aplicación web, interceptamos una solicitud POST al endpoint <code>/api/validate</code>:">
+        Al interactuar con la aplicación web, interceptamos una solicitud POST al endpoint <code>/api/validate</code>:
+      </p>
       <pre><code>POST /api/validate HTTP/1.1
 Host: cohort.htb
 Content-Type: application/json
 
 { "url": "http://test.com/log.csv", "format": "csv" }</code></pre>
-      <p>Se identifica un filtro que rechaza direcciones locales (blacklist). Probamos un bypass de SSRF:</p>
+      <p data-en="A filter is identified that rejects local addresses (blacklist). We test an SSRF bypass:" 
+         data-es="Se identifica un filtro que rechaza direcciones locales (blacklist). Probamos un bypass de SSRF:">
+        Se identifica un filtro que rechaza direcciones locales (blacklist). Probamos un bypass de SSRF:
+      </p>
       <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
   -d '{"url": "http://127.1/", "format": "csv"}'</code></pre>
 
-      <h2>3. Descubrimiento de Servicios Internos y Nginx (/status)</h2>
-      <p>Consultando el endpoint protegido <code>/status</code> a través del SSRF:</p>
+      <h2 data-en="3. Internal Services Discovery and Nginx (/status)" data-es="3. Descubrimiento de Servicios Internos y Nginx (/status)">3. Descubrimiento de Servicios Internos y Nginx (/status)</h2>
+      <p data-en="Querying the protected endpoint <code>/status</code> through the SSRF:" data-es="Consultando el endpoint protegido <code>/status</code> a través del SSRF:">Consultando el endpoint protegido <code>/status</code> a través del SSRF:</p>
       <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
   -d '{"url": "http://127.1/status", "format": "csv"}'</code></pre>
-      <p>Esto revela un Virtual Host oculto: <code>nb-1be3782a8afd3ad5.cohort.htb</code> que apunta al puerto 8888 (Marimo).</p>
+      <p data-en="This reveals a hidden Virtual Host: <code>nb-1be3782a8afd3ad5.cohort.htb</code> pointing to port 8888 (Marimo)." 
+         data-es="Esto revela un Virtual Host oculto: <code>nb-1be3782a8afd3ad5.cohort.htb</code> que apunta al puerto 8888 (Marimo).">
+        Esto revela un Virtual Host oculto: <code>nb-1be3782a8afd3ad5.cohort.htb</code> que apunta al puerto 8888 (Marimo).
+      </p>
 
-      <h2>4. Explotación de Marimo (CVE-2026-39987)</h2>
-      <p>Se explota la omisión de autenticación previa en la ruta WebSocket <code>/terminal/ws</code> para obtener una consola interactiva sin credenciales.</p>
+      <h2 data-en="4. Marimo Exploitation (CVE-2026-39987)" data-es="4. Explotación de Marimo (CVE-2026-39987)">4. Explotación de Marimo (CVE-2026-39987)</h2>
+      <p data-en="Pre-authentication bypass is exploited in the WebSocket path <code>/terminal/ws</code> to obtain an interactive shell without credentials." 
+         data-es="Se explota la omisión de autenticación previa en la ruta WebSocket <code>/terminal/ws</code> para obtener una consola interactiva sin credenciales.">
+        Se explota la omisión de autenticación previa en la ruta WebSocket <code>/terminal/ws</code> para obtener una consola interactiva sin credenciales.
+      </p>
 
-      <h2>5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)</h2>
-      <p>Se detecta una versión vulnerable de PackageKit (1.0.2 - 1.3.4). Tras transferir el exploit y ganar una condición de carrera (race condition), logramos generar una bash con SUID y obtener privilegios de <code>root</code>.</p>
+      <h2 data-en="5. Privilege Escalation: Pack2TheRoot (CVE-2026-41651)" data-es="5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)">5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)</h2>
+      <p data-en="A vulnerable version of PackageKit (1.0.2 - 1.3.4) is detected. After transferring the exploit and winning a race condition, we manage to spawn a SUID bash and obtain <code>root</code> privileges." 
+         data-es="Se detecta una versión vulnerable de PackageKit (1.0.2 - 1.3.4). Tras transferir el exploit y ganar una condición de carrera (race condition), logramos generar una bash con SUID y obtener privilegios de <code>root</code>.">
+        Se detecta una versión vulnerable de PackageKit (1.0.2 - 1.3.4). Tras transferir el exploit y ganar una condición de carrera (race condition), logramos generar una bash con SUID y obtener privilegios de <code>root</code>.
+      </p>
       
-      <a href="../index.html" class="back-btn" style="margin-top: 3rem;">← Volver al inicio</a>
+      <a href="/" class="back-btn" style="margin-top: 3rem;" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
     </main>
 
+    <!-- Script idéntico para alternar idiomas -->
+    <script>
+      const langToggle = document.getElementById('lang-toggle');
+      let currentLang = localStorage.getItem('site-lang') || 'es';
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('site-lang', lang);
+        document.documentElement.lang = lang;
+        
+        document.querySelectorAll('[data-en]').forEach(el => {
+          if (lang === 'en') {
+            el.innerHTML = el.getAttribute('data-en');
+          } else {
+            el.innerHTML = el.getAttribute('data-es');
+          }
+        });
+        langToggle.textContent = lang === 'en' ? 'ES' : 'EN';
+      }
+
+      setLanguage(currentLang);
+
+      langToggle.addEventListener('click', () => {
+        setLanguage(currentLang === 'en' ? 'es' : 'en');
+      });
+    </script>
   </body>
 </html>
