@@ -39,7 +39,17 @@
       h2 { font-size: 1.4rem; margin-top: 2.5rem; border-bottom: 1px solid #27272a; padding-bottom: 0.3rem; }
       h3 { font-size: 1.1rem; margin-top: 1.5rem; }
       p, li { color: #a1a1aa; line-height: 1.6; }
-      
+      .img-container {
+  margin: 1.5rem 0;
+  text-align: center;
+}
+.img-container img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid #27272a;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
       pre {
         background-color: #09090b; border: 1px solid #27272a;
         padding: 1rem; border-radius: 6px; overflow-x: auto;
@@ -289,6 +299,9 @@ if __name__ == "__main__":
         Ejecutamos el script para verificar el acceso y leer la flag de usuario (user.txt):
       </p>
       <pre><code>python3 marimo_exploit.py "cat /home/marimo/user.txt"</code></pre>
+      <div class="img-container">
+  <img src="images/cohort/3.png" alt="User flag capture" />
+</div>
 
       <h2 data-en="5. Privilege Escalation: Pack2TheRoot (CVE-2026-41651)" data-es="5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)">5. Escalada de Privilegios: Pack2TheRoot (CVE-2026-41651)</h2>
       <p data-en="Once inside the system with marimo user privileges, we perform standard post-exploitation reconnaissance tasks. The sudo -l command requires a password we do not possess, and reviewing SUID binaries or cron jobs reveals no immediate vectors. However, auditing installed system packages via the package manager, we observe the following:" 
