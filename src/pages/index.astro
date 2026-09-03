@@ -309,13 +309,14 @@
       </div>
 
       <nav id="nav-menu">
-        <ul>
-          <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
-          <li><a href="#about" data-en="about me" data-es="sobre mí">about me</a></li>
-          <li><a href="#progress" data-en="progress" data-es="progreso">progress</a></li>
-          <li><a href="#contact" data-en="contact" data-es="contacto">contact</a></li>
-        </ul>
-      </nav>
+    <ul>
+      <li><a href="#home" data-en="home" data-es="inicio">home</a></li>
+      <li><a href="#about" data-en="about me" data-es="sobre mí">about me</a></li>
+      <li><a href="#progress" data-en="progress" data-es="progreso">progress</a></li>
+      <li><a href="#writeups" data-en="writeups" data-es="writeups">writeups</a></li>
+      <li><a href="#contact" data-en="contact" data-es="contacto">contact</a></li>
+    </ul>
+    </nav>
     </header>
 
     <!-- Contenido -->
@@ -384,7 +385,30 @@
           </li>
         </ul>
       </section>
-
+      <!-- Sección de Writeups -->
+      <section id="writeups">
+        <h2 data-en="Writeups" data-es="Writeups">Writeups</h2>
+        <p data-en="Walkthroughs and writeups of virtual machines from Hack The Box, TryHackMe, and custom labs." 
+           data-es="Guías paso a paso y writeups de máquinas virtuales de Hack The Box, TryHackMe y laboratorios propios.">
+          Walkthroughs and writeups of virtual machines from Hack The Box, TryHackMe, and custom labs.
+        </p>
+        
+        <ul class="card-list" style="margin-top: 1rem;">
+          <!-- Tarjeta de la máquina Cohort -->
+          <li class="card">
+            <h3 style="color: #f8fafc; margin-bottom: 0.4rem;">Cohort - Hack The Box</h3>
+            <p data-en="SSRF bypass, WebSocket unauth exploitation (CVE-2026-39987), and PackageKit PrivEsc (Pack2TheRoot)."
+               data-es="Bypass de SSRF, explotación de WebSocket sin auth (CVE-2026-39987) y escalada con PackageKit (Pack2TheRoot).">
+              SSRF bypass, WebSocket unauth exploitation (CVE-2026-39987), and PackageKit PrivEsc (Pack2TheRoot).
+            </p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+              <span class="level" style="margin: 0;" data-en="Platform: HTB • Difficulty: Medium" data-es="Plataforma: HTB • Dificultad: Media">Platform: HTB • Difficulty: Medium</span>
+              <!-- Aquí apuntarás al archivo HTML o página de tu writeup cuando la crees -->
+              <a href="writeups/cohort.html" style="color: #000000; background-color: #facc15; padding: 0.3rem 0.8rem; border-radius: 4px; font-size: 0.85rem; font-weight: 600; text-decoration: none;" data-en="Read Writeup →" data-es="Leer Writeup →">Read Writeup →</a>
+            </div>
+          </li>
+        </ul>
+      </section>
       <section id="contact">
         <h2 data-en="Contact" data-es="Contacto">Contact</h2>
         <p data-en="Want to connect or talk about cybersecurity?" data-es="¿Quieres conectar o hablar sobre ciberseguridad?">Want to connect or talk about cybersecurity?</p>
